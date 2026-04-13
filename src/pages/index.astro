@@ -1,0 +1,26 @@
+---
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 😎余温 原创开发 🔗https://wiki.xxdevops.cn
+// 首页入口 - 博客主页
+
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.vue';
+import Banner from '../components/Banner.vue';
+---
+
+<Layout title="RouxZhee - 首页">
+  <div class="home-page">
+    <!-- 🧭 导航栏 (Vue 组件) -->
+    <Navbar client:only="vue" />
+
+    <!-- 🎯 Banner 区域 (Vue 组件) -->
+    <Banner client:load />
+
+    <!-- 📄 内容区域 -->
+    <div class="home-content-section" id="content">
+      <div class="container">
+        <p>内容区域待开发...</p>
+      </div>
+    </div>
+  </div>
+</Layout>

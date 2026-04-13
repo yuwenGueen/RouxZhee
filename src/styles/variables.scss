@@ -1,0 +1,157 @@
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 😎余温 原创开发 🔗https://wiki.xxdevops.cn
+// 全局 SCSS 变量定义 - 统一配色管理
+
+// ========================================
+// 🎨 颜色系统
+// ========================================
+
+// 🌄 亮色模式
+:root {
+  // 主色调
+  --primary-color: #0e7490;
+  --secondary-color: #06b6d4;
+  --accent-color: #ec4899;
+
+  // 文本颜色
+  --text-color: #1f2937;
+  --text-secondary: #6b7280;
+  --text-white: #ffffff;
+
+  // 背景颜色
+  --bg-color: #f9fafb;
+  --card-bg: #ffffff;
+  --header-bg: #ffffff;
+
+  // 边框颜色
+  --border-color: #e5e7eb;
+
+  // 渐变
+  --gradient-primary: linear-gradient(135deg, #0e7490 0%, #06b6d4 100%);
+  --gradient-cyber: linear-gradient(120deg, #0e7490 0%, #06b6d4 50%, #22d3ee 100%);
+
+  // 玻璃拟态
+  --glass-bg: rgba(255, 255, 255, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-blur: 20px;
+
+  // 🏞️ Banner 专用变量
+  --banner-title-shadow: 0 0 30px rgba(147, 51, 234, 0.6),
+                         0 0 60px rgba(6, 182, 212, 0.4),
+                         0 4px 20px rgba(0, 0, 0, 0.5);
+  --banner-subtitle-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
+
+  // 🌊 波浪颜色 - 与内容区背景融合
+  --wave-color-1: rgba(249, 250, 251, 0.9);
+  --wave-color-2: rgba(249, 250, 251, 0.7);
+  --wave-color-3: rgba(249, 250, 251, 0.5);
+  --wave-color-4: rgba(249, 250, 251, 1);
+
+  // 🌊 波浪过渡区背景色（与内容区一致）
+  --wave-transition-bg: var(--bg-color);
+
+  // 🏞️ Banner 背景渐变
+  --banner-bg-start: #1a1a2e;
+  --banner-bg-end: #16213e;
+  --banner-gradient: linear-gradient(135deg, var(--banner-bg-start) 0%, var(--banner-bg-end) 100%);
+
+  // 🛰️ 导航栏背景 - 顶部区域状态
+  --navbar-transparent-bg-start: rgba(26, 26, 46, 0.65);
+  --navbar-transparent-bg-end: rgba(22, 33, 62, 0.65);
+  --navbar-transparent-blur: 12px;
+  --navbar-transparent-saturate: 150%;
+
+  // 🛰️ 导航栏背景 - 当滚动后状态
+  --navbar-scrolled-bg-start: rgba(26, 26, 46, 0.85);
+  --navbar-scrolled-bg-end: rgba(22, 33, 62, 0.85);
+  --navbar-scrolled-blur: 16px;
+  --navbar-scrolled-saturate: 180%;
+
+  // 🛰️ 导航栏的阴影
+  --navbar-shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --navbar-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --navbar-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --navbar-inset-highlight-strong: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+  // 🛰️ 导航栏的边框
+  --navbar-border: 1px solid rgba(255, 255, 255, 0.15);
+
+  // 🛰️ 导航栏的文字颜色
+  --navbar-text: #ffffff;
+  --navbar-text-secondary: rgba(255, 255, 255, 0.85);
+  --navbar-text-hover: #22d3ee;
+}
+
+// 🌠 暗色模式
+.dark-mode {
+  --primary-color: #22d3ee;
+  --secondary-color: #0891b2;
+  --accent-color: #f472b6;
+
+  --text-color: #f3f4f6;
+  --text-secondary: #9ca3af;
+
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --header-bg: #1e293b;
+
+  --border-color: #334155;
+
+  --gradient-primary: linear-gradient(135deg, rgba(34, 211, 238, 0.75) 0%, rgba(6, 182, 212, 0.75) 100%);
+  --gradient-cyber: linear-gradient(120deg, rgba(34, 211, 238, 0.7) 0%, rgba(6, 182, 212, 0.7) 50%, rgba(8, 145, 178, 0.7) 100%);
+
+  --glass-bg: rgba(30, 41, 59, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  // 🌊 波浪颜色 - 暗色模式下与内容区背景融合
+  --wave-color-1: rgba(15, 23, 42, 0.9);
+  --wave-color-2: rgba(15, 23, 42, 0.7);
+  --wave-color-3: rgba(15, 23, 42, 0.5);
+  --wave-color-4: rgba(15, 23, 42, 1);
+
+  // 🌊 波浪过渡区背景色（与内容区一致）
+  --wave-transition-bg: var(--bg-color);
+
+  // 🛰️ 导航栏背景 - 顶部区域状态
+  --navbar-transparent-bg-start: rgba(15, 23, 42, 0.75);
+  --navbar-transparent-bg-end: rgba(30, 41, 59, 0.75);
+
+  // 🛰️ 导航栏背景 - 当滚动后状态
+  --navbar-scrolled-bg-start: rgba(15, 23, 42, 0.95);
+  --navbar-scrolled-bg-end: rgba(30, 41, 59, 0.95);
+}
+
+// ========================================
+// 🔤 字体系统
+// ========================================
+:root {
+  // 📝 全局默认字体
+  --font-body: 'ZiHun232Hao', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  // 🏷️ 标题字体
+  --font-heading: 'TukusiAMaru', 'ZiHun232Hao', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  // ⏰ 时钟字体（等宽字体优先，保证数字对齐）
+  --rouxzhee-font-family-mono: 'ZiHun232Hao', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+}
+
+// ========================================
+// 📐 布局变量
+// ========================================
+:root {
+  --nav-height: 80px;
+  --max-content-width: 1440px;
+  --nav-z-index: 3;
+  --banner-z-index: 4;
+  --content-z-index: 1;
+  --theme-transition-z-index: 2;
+}
+
+// ========================================
+// 🔄 动画变量
+// ========================================
+:root {
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --banner-fade-duration: 3.5s;
+  --breathing-duration: 8s;
+}

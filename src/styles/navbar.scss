@@ -1,0 +1,432 @@
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 😎余温 原创开发 🔗https://wiki.xxdevops.cn
+// 导航栏样式 - 双模式设计
+
+// ========================================
+// 🧭 导航栏基础样式
+// ========================================
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999; // 确保在最上层
+  height: 80px;
+  // 添加所有属性的过渡，确保平滑动画
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // 🫥 顶部区域时（默认）- 页面顶部状态
+  &.is-transparent {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    width: 100%;
+    margin: 0;
+    // 与 Banner 背景色契合的半透明高斯模糊
+    background: linear-gradient(
+      135deg,
+      var(--navbar-transparent-bg-start) 0%,
+      var(--navbar-transparent-bg-end) 100%
+    );
+    backdrop-filter: blur(var(--navbar-transparent-blur)) saturate(var(--navbar-transparent-saturate));
+    -webkit-backdrop-filter: blur(var(--navbar-transparent-blur)) saturate(var(--navbar-transparent-saturate));
+    box-shadow:
+      var(--navbar-shadow-sm),
+      var(--navbar-inset-highlight);
+    border: none;
+    border-radius: 0;
+
+    .navbar-container {
+      margin: 0 5px;
+      border-radius: 0;
+    }
+
+    // 顶部区域时下文字为白色
+    .navbar-site-name,
+    .navbar-link,
+    .navbar-mobile-link {
+      color: var(--navbar-text) !important;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    // Logo 保持原色
+    .navbar-logo {
+      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+    }
+
+    // 移动端菜单按钮
+    .navbar-toggle .toggle-line {
+      background-color: var(--navbar-text) !important;
+    }
+  }
+
+  // 🎴 圆角卡片模式 - 滚动后状态
+  &.is-scrolled {
+    top: 10px !important;
+    left: 5px !important;
+    right: 5px !important;
+    height: 70px !important;
+    width: calc(100% - 10px) !important;
+    margin: 0 auto !important;
+
+    // 与 Banner 背景色契合的半透明高斯模糊 - 更深色版本
+    background: linear-gradient(
+      135deg,
+      var(--navbar-scrolled-bg-start) 0%,
+      var(--navbar-scrolled-bg-end) 100%
+    ) !important;
+    backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
+    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
+
+    // 圆角卡片
+    border-radius: 16px !important;
+
+    // 精致阴影
+    box-shadow:
+      var(--navbar-shadow-lg),
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      var(--navbar-inset-highlight-strong) !important;
+
+    // 边框
+    border: var(--navbar-border) !important;
+
+    .navbar-container {
+      margin: 0 20px;
+    }
+
+    // 滚动后文字保持白色（与深色背景对比）
+    .navbar-site-name {
+      color: var(--navbar-text);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-link {
+      color: var(--navbar-text-secondary);
+
+      &:hover {
+        color: var(--navbar-text-hover);
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.is-active {
+        color: var(--navbar-text-hover);
+      }
+    }
+
+    // 移动端菜单按钮
+    .navbar-toggle .toggle-line {
+      background-color: var(--navbar-text);
+    }
+  }
+}
+
+// ========================================
+// 📦 导航栏容器
+// ========================================
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: var(--max-content-width, 1440px);
+  margin: 0 auto;
+  padding: 0 20px;
+  transition: margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ========================================
+// 🏠 Logo 品牌区域
+// ========================================
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.navbar-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  transition: filter 0.3s ease;
+}
+
+.navbar-site-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  transition: color 0.3s ease;
+}
+
+// ========================================
+// 📍 导航链接菜单
+// ========================================
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.navbar-link {
+  position: relative;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  // 下划线动画
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+    transition:
+      width 0.3s ease,
+      left 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 60%;
+    left: 20%;
+  }
+}
+
+// ========================================
+// ⏰ 时钟区域
+// ========================================
+.navbar-clock {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 16px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// ========================================
+// 📱 移动端菜单按钮
+// ========================================
+.navbar-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  gap: 6px;
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+
+  .toggle-line {
+    display: block;
+    width: 24px;
+    height: 2px;
+    border-radius: 2px;
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease,
+      background-color 0.3s ease;
+  }
+
+  // 激活状态 - 变成 X
+  &.is-active {
+    .toggle-line {
+      &:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      &:nth-child(2) {
+        opacity: 0;
+      }
+      &:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+    }
+  }
+}
+
+// ========================================
+// 📱 移动端菜单面板
+// ========================================
+.navbar-mobile-menu {
+  position: fixed;
+  top: calc(var(--nav-height, 80px) + 10px);
+  left: 5px;
+  right: 5px;
+  z-index: calc(var(--nav-z-index, 3) - 1);
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+
+  // 与 Banner 背景色契合的半透明高斯模糊
+  background: linear-gradient(
+    135deg,
+    var(--navbar-scrolled-bg-start) 0%,
+    var(--navbar-scrolled-bg-end) 100%
+  );
+  backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
+  -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
+
+  // 圆角
+  border-radius: 12px;
+
+  // 阴影
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    var(--navbar-inset-highlight);
+
+  // 边框
+  border: var(--navbar-border);
+
+  // 动画
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease,
+    transform 0.3s ease;
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+.navbar-mobile-link {
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--navbar-text-secondary);
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--navbar-text-hover);
+  }
+}
+
+// ========================================
+// 🌙 暗色模式适配
+// ========================================
+.dark-mode {
+  .navbar {
+    // 顶部区域时 - 暗色版本
+    &.is-transparent {
+      background: linear-gradient(
+        135deg,
+        var(--navbar-transparent-bg-start) 0%,
+        var(--navbar-transparent-bg-end) 100%
+      );
+      box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.2),
+        var(--navbar-inset-highlight);
+    }
+
+    // 滚动后状态 - 更暗的版本
+    &.is-scrolled {
+      background: linear-gradient(
+        135deg,
+        var(--navbar-scrolled-bg-start) 0%,
+        var(--navbar-scrolled-bg-end) 100%
+      ) !important;
+      backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
+      -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        var(--navbar-inset-highlight-strong) !important;
+      border: var(--navbar-border) !important;
+
+      .navbar-site-name {
+        color: var(--navbar-text);
+      }
+
+      .navbar-link {
+        color: var(--navbar-text-secondary);
+
+        &:hover {
+          color: var(--navbar-text-hover);
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+  }
+
+  .navbar-mobile-menu {
+    background: linear-gradient(
+      135deg,
+      var(--navbar-scrolled-bg-start) 0%,
+      var(--navbar-scrolled-bg-end) 100%
+    );
+    backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
+    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      var(--navbar-inset-highlight);
+    border: var(--navbar-border);
+  }
+
+  .navbar-mobile-link {
+    color: var(--navbar-text-secondary);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--navbar-text-hover);
+    }
+  }
+}
+
+// ========================================
+// ♿ 无障碍支持
+// ========================================
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .navbar-container,
+  .navbar-link,
+  .navbar-mobile-menu {
+    transition: none !important;
+  }
+}

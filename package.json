@@ -1,0 +1,21 @@
+{
+  "name": "rouxzhee-blog",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/vue": "^6.0.1",
+    "astro": "^6.1.5",
+    "vue": "^3.5.32"
+  },
+  "devDependencies": {
+    "sass": "^1.99.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,71 @@
+---
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 😎余温 原创开发 🔗https://wiki.xxdevops.cn
+// 基础布局组件 - 提供页面整体框架结构
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'RouxZhee博客' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <!-- 📄 页面内容 -->
+    <slot />
+  </body>
+</html>
+
+<style lang="scss" is:global>
+  // 全局字体定义与基础样式
+
+  // 🎨 引入全局 SCSS 变量和样式（@use 必须放在最前面）
+  @use '../styles/variables.scss' as *;
+  @use '../styles/home-page.scss' as *;
+  @use '../styles/navbar.scss' as *;
+
+  // 🔤 字体定义
+  @font-face {
+    font-family: 'ZiHun232Hao';
+    src: url('/fonts/xnyt.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'TukusiAMaru';
+    src: url('/fonts/筑紫A丸.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  // 🎨 基础样式重置
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  // 🏷️ 标题字体
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+</style>

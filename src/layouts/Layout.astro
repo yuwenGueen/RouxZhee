@@ -47,9 +47,9 @@ const { title, description = 'RouxZhee博客' } = Astro.props;
     left: 0;
     right: 0;
     height: 80px;
-    background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 100%);
-    backdrop-filter: blur(10px);
-    z-index: 3;
+    background: linear-gradient(135deg, var(--navbar-transparent-bg-start) 0%, var(--navbar-transparent-bg-end) 100%);
+    backdrop-filter: blur(var(--navbar-transparent-blur));
+    z-index: var(--nav-z-index);
   }
 
   // 🔤 字体定义

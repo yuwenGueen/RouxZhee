@@ -161,14 +161,14 @@ const loadAllPosts = async () => {
       const rawContent = content as string;
       const slug = extractSlug(path);
 
-      // 🔍 解析 frontmatter
-      const frontmatterMatch = rawContent.match(/---\n([\s\S]*?)\n---/);
+      // 🔍 解析 frontmatter（支持 Windows \r\n 和 Unix \n 换行符）
+      const frontmatterMatch = rawContent.match(/---\r?\n([\s\S]*?)\r?\n---/);
       let frontmatter: Record<string, any> = {};
 
       if (frontmatterMatch) {
         const frontmatterContent = frontmatterMatch[1];
         // 简单解析 YAML frontmatter
-        frontmatterContent.split('\n').forEach(line => {
+        frontmatterContent.split(/\r?\n/).forEach(line => {
           const colonIndex = line.indexOf(':');
           if (colonIndex > 0) {
             const key = line.slice(0, colonIndex).trim();

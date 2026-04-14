@@ -5,6 +5,7 @@
 
 import Layout from '../layouts/Layout.astro';
 import Banner from '../components/Banner.vue';
+import HomeContent from '../components/HomeContent.vue';
 ---
 
 <Layout title="RouxZhee - 首页">
@@ -14,9 +15,8 @@ import Banner from '../components/Banner.vue';
 
     <!-- 📄 内容区域 -->
     <div class="home-content-section" id="content">
-      <div class="container">
-        <p>内容区域待开发...</p>
-      </div>
+      <!-- 🏠 双栏内容布局 -->
+      <HomeContent client:only="vue" />
     </div>
   </div>
 </Layout>

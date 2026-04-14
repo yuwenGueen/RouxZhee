@@ -152,7 +152,7 @@
 :root {
   --nav-height: 80px;
   --max-content-width: 1440px;
-  --nav-z-index: 3;
+  --nav-z-index: 4;
   --banner-z-index: 4;
   --content-z-index: 1;
   --theme-transition-z-index: 2;
@@ -167,4 +167,90 @@
   --transition-slow: 0.5s ease;
   --banner-fade-duration: 3.5s;
   --breathing-duration: 8s;
+}
+
+// ========================================
+// 📦 卡片组件变量
+// ========================================
+:root {
+  // 🃏 卡片基础样式
+  --card-border-radius: 16px;
+  --card-padding: 1.5rem;
+  --card-gap: 1.5rem;
+  --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --card-transform-hover: translateY(-4px);
+
+  // 🃏 卡片内容区域
+  --card-content-padding: 1.25rem;
+  --card-content-gap: 0.75rem;
+
+  // 🃏 卡片标题
+  --card-title-font-size: 1.125rem;
+  --card-title-font-weight: 600;
+  --card-title-line-height: 1.4;
+
+  // 🃏 卡片描述
+  --card-description-font-size: 0.875rem;
+  --card-description-line-height: 1.6;
+  --card-description-clamp: 2;
+
+  // 🃏 卡片日期
+  --card-date-font-size: 0.8125rem;
+  --card-date-icon-size: 14px;
+  --card-date-border-top: 1px solid var(rgba(0, 0, 0, 0.05));
+
+  // 🃏 卡片悬停遮罩
+  --card-overlay-bg: rgba(255, 255, 255, 0.15);
+  --card-overlay-blur: 12px;
+  --card-overlay-opacity: 0;
+  --card-overlay-opacity-hover: 1;
+
+  // 🃏 卡片图标容器
+  --card-icon-wrapper-size: 56px;
+  --card-icon-wrapper-bg: rgba(255, 255, 255, 0.95);
+  --card-icon-wrapper-radius: 16px;
+  --card-icon-wrapper-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --card-icon-size: 28px;
+  --card-icon-transform-initial: translateX(-8px) scale(0.9);
+  --card-icon-transform-hover: translateX(0) scale(1);
+
+  // 🃏 博主卡片
+  --blogger-avatar-size: 100px;
+  --blogger-avatar-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --blogger-avatar-shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.2);
+  --blogger-name-font-size: 1.25rem;
+  --blogger-name-font-weight: 600;
+  --blogger-social-link-size: 40px;
+  --blogger-social-link-radius: 10px;
+  --blogger-social-link-bg: var(rgba(255, 255, 255, 0.1));
+  --blogger-social-link-bg-hover: var(rgba(139, 92, 246, 0.2));
+  --blogger-social-icon-size: 20px;
+
+  // 🃏 文档卡片封面
+  --post-cover-aspect-ratio: 16 / 10;
+  --post-cover-scale-hover: scale(1.05);
+  --post-cover-transition: transform 0.5s ease;
+
+  // 🃏 加载按钮
+  --load-more-padding: 0.875rem 2rem;
+  --load-more-font-size: 0.9375rem;
+  --load-more-font-weight: 500;
+  --load-more-radius: 12px;
+  --load-more-shadow: 0 4px 16px rgba(14, 116, 144, 0.3);
+  --load-more-shadow-hover: 0 6px 24px rgba(14, 116, 144, 0.4);
+  --load-more-transform-hover: translateY(-2px);
+
+  // 🃏 布局
+  --content-sidebar-width: 320px;
+  --content-grid-gap: 2rem;
+  --posts-grid-columns: repeat(3, 1fr);
+  --posts-grid-gap: 1.5rem;
+}
+
+// 🌠 暗色模式 - 卡片变量
+.dark-mode {
+  --card-date-border-top: 1px solid rgba(255, 255, 255, 0.05);
+  --blogger-social-link-bg: rgba(255, 255, 255, 0.05);
+  --blogger-social-link-bg-hover: rgba(255, 255, 255, 0.1);
 }

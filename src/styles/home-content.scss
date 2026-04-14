@@ -1,0 +1,163 @@
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 😎余温 原创开发 🔗https://wiki.xxdevops.cn
+// 首页双栏内容布局样式
+
+/* 🎨 首页双栏内容布局样式 */
+
+.home-content-layout {
+  /* 📦 基础布局 - 左侧边栏 + 右侧内容 */
+  display: grid;
+  grid-template-columns: var(--content-sidebar-width) 1fr;
+  gap: var(--content-grid-gap);
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+
+  /* 📄 左侧主内容区 */
+  .content-main {
+    min-width: 0; /* 防止内容溢出 */
+
+    /* 📝 文档网格 */
+    .posts-grid {
+      display: grid;
+      grid-template-columns: var(--posts-grid-columns);
+      gap: var(--posts-grid-gap);
+
+      /* 大屏适配 */
+      @media (min-width: 1920px) {
+        grid-template-columns: var(--posts-grid-columns);
+        gap: 2rem;
+      }
+
+      /* 中等屏幕 */
+      @media (max-width: 1200px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      /* 小屏幕 */
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+
+    /* 📄 分页区域 */
+    .posts-pagination {
+      margin-top: 2.5rem;
+      text-align: center;
+
+      .load-more-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--load-more-padding);
+        font-size: var(--load-more-font-size);
+        font-weight: var(--load-more-font-weight);
+        color: var(--text-white);
+        background: var(--gradient-primary);
+        border: none;
+        border-radius: var(--load-more-radius);
+        cursor: pointer;
+        transition: all var(--transition-normal);
+        box-shadow: var(--load-more-shadow);
+
+        &:hover:not(:disabled) {
+          transform: var(--load-more-transform-hover);
+          box-shadow: var(--load-more-shadow-hover);
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+      }
+
+      .no-more-posts {
+        color: var(--text-secondary);
+        font-size: var(--load-more-font-size);
+        padding: 1rem 0;
+      }
+    }
+  }
+
+  /* 🎯 右侧侧边栏 */
+  .content-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--card-gap);
+    position: sticky;
+    top: calc(var(--nav-height) + 2rem);
+    height: fit-content;
+
+    /* 侧边栏卡片通用样式 */
+    > * {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--card-border-radius);
+      box-shadow: var(--card-shadow);
+    }
+  }
+
+  /* 📱 响应式适配：平板及以下变为单栏 */
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+
+    .content-sidebar {
+      position: static;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      > * {
+        flex: 1;
+        min-width: 280px;
+      }
+    }
+  }
+
+  /* 📱 移动端适配 */
+  @media (max-width: 768px) {
+    padding: 0 0.75rem;
+    gap: 1.5rem;
+
+    .content-sidebar {
+      flex-direction: column;
+
+      > * {
+        min-width: auto;
+      }
+    }
+  }
+}
+
+/* 🌙 暗色模式适配 */
+.dark-mode {
+  .home-content-layout {
+    .content-main {
+      .posts-pagination {
+        .load-more-btn {
+          box-shadow: 0 4px 16px rgba(34, 211, 238, 0.2);
+
+          &:hover:not(:disabled) {
+            box-shadow: 0 6px 24px rgba(34, 211, 238, 0.3);
+          }
+        }
+
+        .no-more-posts {
+          color: var(--text-secondary);
+        }
+      }
+    }
+
+    .content-sidebar {
+      > * {
+        background: var(--glass-bg);
+        border-color: var(--glass-border);
+      }
+    }
+  }
+}

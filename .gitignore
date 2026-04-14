@@ -59,7 +59,7 @@ pagefind/
 
 # 🎨 用户自定义配置目录 - 避免更新时被覆盖
 # 注意：如果你需要推送配置到自己的仓库，请注释掉下面这行
-src/config/.config/
+# src/config/.config/
 
 /.开发文档
 /.trae/

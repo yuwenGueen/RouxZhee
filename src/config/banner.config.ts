@@ -15,10 +15,10 @@ export const defaultBannerConfig = {
     enabled: true,
     // 副标题文本列表
     items: [
-      '探索技术的无限可能',
-      '记录学习的点滴成长',
-      '分享编程的乐趣与思考',
-      '在代码中寻找诗意',
+      '堂堂亚特兰蒂斯后裔',
+      '鲨鲨连个岩王帝君都请不动',
+      '丢不丢人！',
+      'Bloop你别笑',
     ],
     // 打字速度 (ms)
     typeSpeed: 90,
@@ -41,11 +41,23 @@ export const defaultBannerConfig = {
     // 轮播间隔 (ms)
     interval: 8000,
     // 静态图片列表 (为空则使用默认渐变)
-    images: [] as string[],
-    // API 配置
+    // 支持自定义图片链接
+    images: [
+      'https://mu.baimu.live/img/acg',
+      'https://mu.baimu.live/img/xk',
+    ] as string[],
+    // 图片填充模式：'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
+    objectFit: 'cover' as 'cover' | 'contain' | 'fill' | 'none' | 'scale-down',
+    // 图片位置，例如：'center', 'top', 'bottom', 'left', 'right'
+    position: 'center' as string,
+    // 背景淡入动画时长 (ms)
+    fadeDuration: 3500,
+    // API 配置（用于动态获取背景图片）
     api: {
       enabled: false,
       url: '',
+      // API 返回图片字段名
+      imageField: 'url',
     },
   },
 

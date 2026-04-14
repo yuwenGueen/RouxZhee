@@ -30,10 +30,18 @@ export const userBannerConfig: Partial<BannerConfig> = {
     enabled: true,
     autoPlay: true,
     interval: 10000,
-    images: [],
+    // 背景图片列表
+    images: [
+      'https://mu.baimu.live/img/acg',
+      'https://mu.baimu.live/img/xk',
+    ],
+    objectFit: 'cover',
+    position: 'center',
+    fadeDuration: 3500,
     api: {
       enabled: false,
       url: '',
+      imageField: 'url',
     },
   },
 

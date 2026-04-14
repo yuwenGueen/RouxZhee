@@ -52,19 +52,22 @@ onUnmounted(() => {
 
 <template>
   <div class="header-clock">
-    <svg class="clock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-      <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-    </svg>
-    <span class="clock-time">
-      <span class="hour">{{ hours }}</span>
-      <span class="separator">:</span>
-      <span class="minute">{{ minutes }}</span>
-      <template v-if="showSeconds">
+    <!-- 📦 透明容器框，防止数字跳动导致布局变化 -->
+    <div class="clock-container">
+      <svg class="clock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="clock-time">
+        <span class="hour">{{ hours }}</span>
         <span class="separator">:</span>
-        <span class="second">{{ seconds }}</span>
-      </template>
-    </span>
+        <span class="minute">{{ minutes }}</span>
+        <template v-if="showSeconds">
+          <span class="separator">:</span>
+          <span class="second">{{ seconds }}</span>
+        </template>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -72,8 +75,21 @@ onUnmounted(() => {
 .header-clock {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   font-family: var(--rouxzhee-font-family-mono, 'Monaco', 'Menlo', 'Consolas', monospace);
+
+  // 📦 透明容器框，固定宽度防止跳动
+  .clock-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 90px; // 固定宽度，避免数字变化导致布局跳动
+    height: 36px; // 固定高度
+    padding: 0 12px;
+    border-radius: 8px;
+    background-color: transparent; // 完全透明背景
+    justify-content: center;
+    flex-shrink: 0; // 防止容器被压缩
+  }
 
   .clock-icon {
     display: none;
@@ -85,13 +101,17 @@ onUnmounted(() => {
     letter-spacing: 0.05em;
     color: inherit;
     contain: content;
+    white-space: nowrap; // 防止文本换行
 
     span {
       display: inline-block;
+      min-width: 1.2em; // 每个数字最小宽度，防止跳动
+      text-align: center;
     }
 
     .separator {
       opacity: 0.6;
+      min-width: 0.5em;
     }
 
     .second {

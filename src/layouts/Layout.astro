@@ -34,6 +34,24 @@ const { title, description = 'RouxZhee博客' } = Astro.props;
   @use '../styles/home-page.scss' as *;
   @use '../styles/navbar.scss' as *;
 
+  // 🛡️ 防止 Vue 组件闪烁 - 骨架屏样式
+  astro-island[client\:only="vue"] {
+    display: block;
+    min-height: 80px; // 导航栏最小高度
+  }
+
+  // 确保导航栏在加载前就有基本样式
+  .navbar-skeleton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 100%);
+    backdrop-filter: blur(10px);
+    z-index: 3;
+  }
+
   // 🔤 字体定义
   @font-face {
     font-family: 'ZiHun232Hao';

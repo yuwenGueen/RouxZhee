@@ -3,14 +3,25 @@
 // 导航栏样式 - 双模式设计
 
 // ========================================
+// 🛡️ 防止闪烁 - 服务端渲染样式
+// ========================================
+.navbar,
+.navbar-container,
+.navbar-menu,
+.navbar-social {
+  visibility: visible;
+  opacity: 1;
+}
+
+// ========================================
 // 🧭 导航栏基础样式
 // ========================================
 .navbar {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9999; // 确保在最上层
+  z-index: var(--nav-z-index, 3);
   height: 80px;
   // 添加所有属性的过渡，确保平滑动画
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -47,12 +58,23 @@
     .navbar-link,
     .navbar-mobile-link {
       color: var(--navbar-text) !important;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      text-shadow: var(--navbar-text-shadow);
+    }
+
+    // ⏰ 时钟文字颜色
+    .navbar-clock {
+      color: var(--navbar-text);
+      text-shadow: var(--navbar-text-shadow);
+    }
+
+    // 🔗 社交链接图标颜色
+    .social-link .social-icon {
+      color: var(--navbar-text);
     }
 
     // Logo 保持原色
     .navbar-logo {
-      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+      filter: drop-shadow(var(--navbar-text-shadow));
     }
 
     // 移动端菜单按钮
@@ -63,6 +85,8 @@
 
   // 🎴 圆角卡片模式 - 滚动后状态
   &.is-scrolled {
+    // 📌 滚动后固定定位，使其保持在视口顶部
+    position: fixed;
     top: 10px !important;
     left: 5px !important;
     right: 5px !important;
@@ -79,7 +103,7 @@
     backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
     -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
 
-    // 圆角卡片
+    // 🎴 圆角卡片样式
     border-radius: 16px !important;
 
     // 精致阴影
@@ -98,7 +122,7 @@
     // 滚动后文字保持白色（与深色背景对比）
     .navbar-site-name {
       color: var(--navbar-text);
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      text-shadow: var(--navbar-text-shadow-sm);
     }
 
     .navbar-link {
@@ -106,12 +130,23 @@
 
       &:hover {
         color: var(--navbar-text-hover);
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: var(--navbar-link-active-bg);
       }
 
       &.is-active {
         color: var(--navbar-text-hover);
       }
+    }
+
+    // ⏰ 滚动后时钟文字颜色
+    .navbar-clock {
+      color: var(--navbar-text);
+      text-shadow: var(--navbar-text-shadow-sm);
+    }
+
+    // 🔗 滚动后社交链接图标颜色
+    .social-link .social-icon {
+      color: var(--navbar-text);
     }
 
     // 移动端菜单按钮
@@ -125,14 +160,24 @@
 // 📦 导航栏容器
 // ========================================
 .navbar-container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 100%;
+  width: 1940px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 10px;
+  transition: margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ========================================
+// 🏠 Logo 品牌区域包装器
+// ========================================
+.navbar-brand-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  max-width: var(--max-content-width, 1440px);
-  margin: 0 auto;
-  padding: 0 20px;
-  transition: margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  justify-self: start;
 }
 
 // ========================================
@@ -141,9 +186,13 @@
 .navbar-brand {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
   text-decoration: none;
   transition: transform 0.3s ease;
+  height: 100%;
+  padding: 0 12px;
+  border-radius: 8px;
 
   &:hover {
     transform: scale(1.02);
@@ -155,6 +204,10 @@
   height: 36px;
   object-fit: contain;
   transition: filter 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .navbar-site-name {
@@ -162,6 +215,8 @@
   font-weight: 600;
   letter-spacing: -0.5px;
   transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
 }
 
 // ========================================
@@ -170,7 +225,9 @@
 .navbar-menu {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  justify-self: center;
 
   @media (max-width: 768px) {
     display: none;
@@ -189,7 +246,8 @@
     background-color 0.3s ease;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    // 💜 半透明紫色背景
+    background-color: var(--navbar-link-hover-bg);
   }
 
   // 下划线动画
@@ -219,8 +277,17 @@
 .navbar-clock {
   display: flex;
   align-items: center;
-  margin-left: auto;
-  margin-right: 16px;
+  padding-right: 15px;
+}
+
+// ========================================
+// 🔗 右侧区域（社交链接 + 时钟）
+// ========================================
+.navbar-right {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 8px;
 
   @media (max-width: 768px) {
     display: none;
@@ -228,7 +295,41 @@
 }
 
 // ========================================
-// 📱 移动端菜单按钮
+// 🔗 社交链接区域
+// ========================================
+.navbar-social {
+  display: flex;
+  align-items: center;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--navbar-social-bg);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background-color: var(--navbar-social-hover-bg);
+    transform: scale(1.05);
+  }
+
+  .social-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--navbar-text);
+  }
+}
+
+// ========================================
+// �� 移动端菜单按钮
 // ========================================
 .navbar-toggle {
   display: none;
@@ -303,8 +404,7 @@
 
   // 阴影
   box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.2),
+    var(--navbar-mobile-menu-shadow),
     var(--navbar-inset-highlight);
 
   // 边框
@@ -342,7 +442,7 @@
     color 0.2s ease;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--navbar-link-active-bg);
     color: var(--navbar-text-hover);
   }
 }
@@ -374,7 +474,7 @@
       backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
       -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
       box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
+        var(--navbar-shadow-lg),
         0 2px 8px rgba(0, 0, 0, 0.3),
         var(--navbar-inset-highlight-strong) !important;
       border: var(--navbar-border) !important;
@@ -388,7 +488,7 @@
 
         &:hover {
           color: var(--navbar-text-hover);
-          background-color: rgba(255, 255, 255, 0.1);
+          background-color: var(--navbar-link-active-bg);
         }
       }
     }
@@ -403,8 +503,7 @@
     backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
     -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
     box-shadow:
-      0 10px 40px rgba(0, 0, 0, 0.4),
-      0 2px 8px rgba(0, 0, 0, 0.3),
+      var(--navbar-mobile-menu-shadow-dark),
       var(--navbar-inset-highlight);
     border: var(--navbar-border);
   }
@@ -413,7 +512,7 @@
     color: var(--navbar-text-secondary);
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--navbar-link-active-bg);
       color: var(--navbar-text-hover);
     }
   }

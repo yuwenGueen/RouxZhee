@@ -9,8 +9,8 @@
   overflow-x: hidden;
   box-sizing: border-box;
   position: relative;
-  // 为固定导航栏预留空间
-  padding-top: var(--nav-height, 80px);
+  // 🧭 导航栏已内嵌到Banner中，不需要额外预留空间
+  padding-top: 0;
 
   // 📄 内容区域
   .home-content-section {

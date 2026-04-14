@@ -80,17 +80,19 @@ onUnmounted(() => {
   >
     <div class="navbar-container">
       <!-- 🏠 Logo 区域 -->
-      <a href="/" class="navbar-brand" @click="closeMobileMenu">
-        <img
-          v-if="navbarConfig.logo.showLogo"
-          :src="navbarConfig.logo.src"
-          :alt="navbarConfig.logo.siteName"
-          class="navbar-logo"
-        />
-        <span v-if="navbarConfig.logo.showSiteName" class="navbar-site-name">
-          {{ navbarConfig.logo.siteName }}
-        </span>
-      </a>
+      <div class="navbar-brand-wrapper">
+        <a href="/" class="navbar-brand" @click="closeMobileMenu">
+          <img
+            v-if="navbarConfig.logo.showLogo"
+            :src="navbarConfig.logo.src"
+            :alt="navbarConfig.logo.siteName"
+            class="navbar-logo"
+          />
+          <span v-if="navbarConfig.logo.showSiteName" class="navbar-site-name">
+            {{ navbarConfig.logo.siteName }}
+          </span>
+        </a>
+      </div>
 
       <!-- 📍 导航链接 -->
       <div class="navbar-menu">
@@ -106,9 +108,28 @@ onUnmounted(() => {
         </a>
       </div>
 
-      <!-- ⏰ 时钟区域 -->
-      <div v-if="navbarConfig.clock.enabled" class="navbar-clock">
-        <Clock />
+      <!-- 🔗 右侧区域：社交链接 + 时钟 -->
+      <div class="navbar-right">
+        <!-- 社交链接区域 -->
+        <div v-if="navbarConfig.social.enabled" class="navbar-social">
+          <a
+            v-for="(social, index) in navbarConfig.social.links"
+            :key="`social-${index}`"
+            :href="social.href"
+            class="social-link"
+            :target="social.external ? '_blank' : undefined"
+            :rel="social.external ? 'noopener noreferrer' : undefined"
+            :aria-label="social.name"
+          >
+            <!-- 🎨 使用 v-html 渲染完整 SVG 代码 -->
+            <span class="social-icon" v-html="social.icon"></span>
+          </a>
+        </div>
+
+        <!-- ⏰ 时钟区域 -->
+        <div v-if="navbarConfig.clock.enabled" class="navbar-clock">
+          <Clock />
+        </div>
       </div>
 
       <!-- 📱 移动端菜单按钮 -->

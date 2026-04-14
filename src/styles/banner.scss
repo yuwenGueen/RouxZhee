@@ -12,12 +12,13 @@
   height: 100vh;
   margin: 0;
   padding: 0;
-  padding-top: calc(var(--nav-height, 64px) + 32px);
+  padding-top: 0;
   left: 50%;
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -32,15 +33,14 @@
     right: 0;
     bottom: 0;
     background-image: var(--banner-bg-image-1, none);
-    background-size: cover;
-    background-position: center;
+    background-size: var(--banner-object-fit, cover);
+    background-position: var(--banner-position, center);
     opacity: var(--banner-bg-opacity-1, 1);
     z-index: 0;
-    transition: opacity 3.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity var(--banner-fade-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity;
     backface-visibility: hidden;
     transform: translateZ(0);
-    animation: banner-breathing 8s ease-in-out 2s infinite;
   }
 
   &::after {
@@ -51,15 +51,14 @@
     right: 0;
     bottom: 0;
     background-image: var(--banner-bg-image-2, none);
-    background-size: cover;
-    background-position: center;
+    background-size: var(--banner-object-fit, cover);
+    background-position: var(--banner-position, center);
     opacity: var(--banner-bg-opacity-2, 0);
     z-index: 0;
-    transition: opacity 3.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity var(--banner-fade-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity;
     backface-visibility: hidden;
     transform: translateZ(0);
-    animation: banner-breathing 8s ease-in-out 2s infinite;
   }
 
   // 📝 内容区域
@@ -68,7 +67,8 @@
     z-index: 2;
     text-align: center;
     color: var(--text-white, #fff);
-    padding: 2rem;
+    // 🧭 为内嵌导航栏留出顶部空间
+    padding: calc(var(--nav-height, 80px) + 2rem) 2rem 2rem;
 
     // 🏷️ 标题
     .banner-title {

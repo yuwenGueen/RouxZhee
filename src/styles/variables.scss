@@ -55,17 +55,17 @@
   --banner-bg-end: #16213e;
   --banner-gradient: linear-gradient(135deg, var(--banner-bg-start) 0%, var(--banner-bg-end) 100%);
 
-  // 🛰️ 导航栏背景 - 顶部区域状态
-  --navbar-transparent-bg-start: rgba(26, 26, 46, 0.65);
-  --navbar-transparent-bg-end: rgba(22, 33, 62, 0.65);
-  --navbar-transparent-blur: 12px;
-  --navbar-transparent-saturate: 150%;
+  // 🛰️ 导航栏背景 - 顶部区域状态（无色半透明高斯模糊）
+  --navbar-transparent-bg-start: rgba(255, 255, 255, 0.15);
+  --navbar-transparent-bg-end: rgba(255, 255, 255, 0.05);
+  --navbar-transparent-blur: 20px;
+  --navbar-transparent-saturate: 180%;
 
-  // 🛰️ 导航栏背景 - 当滚动后状态
-  --navbar-scrolled-bg-start: rgba(26, 26, 46, 0.85);
-  --navbar-scrolled-bg-end: rgba(22, 33, 62, 0.85);
-  --navbar-scrolled-blur: 16px;
-  --navbar-scrolled-saturate: 180%;
+  // 🛰️ 导航栏背景 - 当滚动后状态（无色半透明高斯模糊）
+  --navbar-scrolled-bg-start: rgba(255, 255, 255, 0.25);
+  --navbar-scrolled-bg-end: rgba(255, 255, 255, 0.15);
+  --navbar-scrolled-blur: 24px;
+  --navbar-scrolled-saturate: 200%;
 
   // 🛰️ 导航栏的阴影
   --navbar-shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -76,10 +76,10 @@
   // 🛰️ 导航栏的边框
   --navbar-border: 1px solid rgba(255, 255, 255, 0.15);
 
-  // 🛰️ 导航栏的文字颜色
-  --navbar-text: #ffffff;
-  --navbar-text-secondary: rgba(255, 255, 255, 0.85);
-  --navbar-text-hover: #22d3ee;
+  // 🛰️ 导航栏的文字颜色（深蓝紫色系）
+  --navbar-text: #1e1b4b;
+  --navbar-text-secondary: #4338ca;
+  --navbar-text-hover: #7c3aed;
 
   // 🛰️ 导航栏其他颜色
   --navbar-text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -122,13 +122,13 @@
   // 🌊 波浪过渡区背景色（与内容区一致）
   --wave-transition-bg: var(--bg-color);
 
-  // 🛰️ 导航栏背景 - 顶部区域状态
-  --navbar-transparent-bg-start: rgba(15, 23, 42, 0.75);
-  --navbar-transparent-bg-end: rgba(30, 41, 59, 0.75);
+  // 🛰️ 导航栏背景 - 顶部区域状态（无色半透明高斯模糊）
+  --navbar-transparent-bg-start: rgba(255, 255, 255, 0.1);
+  --navbar-transparent-bg-end: rgba(255, 255, 255, 0.02);
 
-  // 🛰️ 导航栏背景 - 当滚动后状态
-  --navbar-scrolled-bg-start: rgba(15, 23, 42, 0.95);
-  --navbar-scrolled-bg-end: rgba(30, 41, 59, 0.95);
+  // 🛰️ 导航栏背景 - 当滚动后状态（无色半透明高斯模糊）
+  --navbar-scrolled-bg-start: rgba(255, 255, 255, 0.18);
+  --navbar-scrolled-bg-end: rgba(255, 255, 255, 0.08);
 
   // 🛰️ 导航栏其他颜色 - 暗色模式
   --navbar-mobile-menu-shadow-dark: 0 10px 40px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -246,6 +246,16 @@
   --content-grid-gap: 2rem;
   --posts-grid-columns: repeat(3, 1fr);
   --posts-grid-gap: 1.5rem;
+
+  // 📝 代码块颜色
+  --code-block-bg: #1e1e2e;
+  --code-block-header-bg: #313244;
+  --code-block-border: #45475a;
+  --code-block-text: #cdd6f4;
+  --code-block-line-number-bg: #181825;
+  --code-block-line-number-color: #6c7086;
+  --code-block-button-bg: #45475a;
+  --code-block-button-hover: #585b70;
 }
 
 // 🌠 暗色模式 - 卡片变量

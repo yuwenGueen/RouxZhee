@@ -5,13 +5,112 @@
 -->
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import Clock from './Clock.vue';
 import { navbarConfig } from '../config/navbar.config';
 
 // 🎯 响应式状态
 const isScrolled = ref(false);
 const isMobileMenuOpen = ref(false);
+
+// 📄 检测是否在文档内容页面
+const isDocPage = computed(() => {
+  if (typeof window === 'undefined') return false;
+  const path = window.location.pathname;
+  // 排除首页和其他非文档页面
+  return path !== '/' && path !== '/index.html' && path !== '';
+});
+
+// 📱 检测是否为移动端
+const isMobile = ref(false);
+const checkIsMobile = () => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth <= 768;
+};
+
+// 🎨 导航栏透明度控制（普通页面效果）
+const isNavbarFaded = ref(false);
+let navbarFadeTimer: ReturnType<typeof setTimeout> | null = null;
+const NAVBAR_FADE_DELAY = 3000; // ◀️ 3秒后降低透明度
+
+// 🎨 导航栏隐藏控制（文档页面效果 - 上移渐隐）
+const isNavbarHidden = ref(false);
+let navbarHideTimer: ReturnType<typeof setTimeout> | null = null;
+const NAVBAR_HIDE_DELAY = 3000; // ◀️ 3秒后上移隐藏
+
+// 🔗 启动导航栏淡出计时器（普通页面）
+const startNavbarFadeTimer = () => {
+  // 如果是文档页面或移动端，不使用此效果
+  if (isDocPage.value || isMobile.value) return;
+  // 清除已有计时器
+  if (navbarFadeTimer) {
+    clearTimeout(navbarFadeTimer);
+  }
+  // 设置新的计时器，3秒后降低透明度
+  navbarFadeTimer = setTimeout(() => {
+    isNavbarFaded.value = true;
+  }, NAVBAR_FADE_DELAY);
+};
+
+// 🔗 启动导航栏隐藏计时器（文档页面 - 上移渐隐）
+const startNavbarHideTimer = () => {
+  // 如果不是文档页面或是移动端，不使用此效果
+  if (!isDocPage.value || isMobile.value) return;
+  // 清除已有计时器
+  if (navbarHideTimer) {
+    clearTimeout(navbarHideTimer);
+  }
+  // 设置新的计时器，3秒后上移隐藏
+  navbarHideTimer = setTimeout(() => {
+    isNavbarHidden.value = true;
+  }, NAVBAR_HIDE_DELAY);
+};
+
+// 🔗 处理导航栏鼠标移入
+const handleNavbarMouseEnter = () => {
+  // 如果是文档页面且导航栏已隐藏，显示导航栏
+  if (isDocPage.value && !isMobile.value && isNavbarHidden.value) {
+    isNavbarHidden.value = false;
+    // 清除隐藏计时器
+    if (navbarHideTimer) {
+      clearTimeout(navbarHideTimer);
+      navbarHideTimer = null;
+    }
+    return;
+  }
+  // 普通页面：鼠标移入，恢复透明度
+  if (!isDocPage.value || isMobile.value) {
+    isNavbarFaded.value = false;
+    // 清除淡出计时器
+    if (navbarFadeTimer) {
+      clearTimeout(navbarFadeTimer);
+      navbarFadeTimer = null;
+    }
+  }
+};
+
+// 🔗 处理触发区域鼠标移入（立即显示导航栏，无延迟）
+const handleTriggerMouseEnter = () => {
+  if (!isDocPage.value || isMobile.value) return;
+  // 立即显示导航栏
+  isNavbarHidden.value = false;
+  // 清除隐藏计时器
+  if (navbarHideTimer) {
+    clearTimeout(navbarHideTimer);
+    navbarHideTimer = null;
+  }
+};
+
+// 🔗 处理导航栏鼠标移出
+const handleNavbarMouseLeave = () => {
+  // 如果是文档页面，启动隐藏计时器
+  if (isDocPage.value && !isMobile.value) {
+    startNavbarHideTimer();
+    return;
+  }
+  // 普通页面：启动淡出计时器
+  startNavbarFadeTimer();
+};
 
 // 从配置中获取滚动阈值
 const SCROLL_THRESHOLD = navbarConfig.scroll.threshold;
@@ -53,6 +152,14 @@ const closeMobileMenu = () => {
 
 // 🚀 组件挂载
 onMounted(() => {
+  // 初始化移动端检测
+  isMobile.value = checkIsMobile();
+
+  // 监听窗口大小变化，更新移动端状态
+  window.addEventListener('resize', () => {
+    isMobile.value = checkIsMobile();
+  });
+
   // 强制检查初始滚动状态
   checkInitialScroll();
 
@@ -61,24 +168,57 @@ onMounted(() => {
 
   // 延迟再次检查，确保 DOM 完全渲染
   setTimeout(checkInitialScroll, 100);
+
+  // ⏱️ 启动导航栏效果计时器（页面加载3秒后开始）
+  // 文档页面使用上移渐隐，普通页面使用透明度淡出
+  if (isDocPage.value && !isMobile.value) {
+    startNavbarHideTimer();
+  } else {
+    startNavbarFadeTimer();
+  }
 });
 
 // 🧹 组件卸载
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
+  // 清除导航栏淡出计时器
+  if (navbarFadeTimer) {
+    clearTimeout(navbarFadeTimer);
+  }
+  // 清除导航栏隐藏计时器
+  if (navbarHideTimer) {
+    clearTimeout(navbarHideTimer);
+  }
 });
 </script>
 
 <template>
-  <!-- 🧭 导航栏 -->
-  <nav
-    class="navbar"
-    :class="{
-      'is-scrolled': isScrolled,
-      'is-transparent': !isScrolled
-    }"
+  <!-- 🧭 导航栏容器（包含触发区域） -->
+  <div
+    class="navbar-wrapper"
+    :class="{ 'is-hidden': isNavbarHidden }"
+    @mouseenter="handleNavbarMouseEnter"
+    @mouseleave="handleNavbarMouseLeave"
   >
-    <div class="navbar-container">
+    <!-- 📄 文档页面：顶部触发区域（导航栏隐藏时显示） -->
+    <div
+      v-if="isDocPage && !isMobile"
+      class="navbar-trigger-area"
+      :class="{ 'is-visible': isNavbarHidden }"
+      @mouseenter="handleTriggerMouseEnter"
+    ></div>
+
+    <!-- 🧭 导航栏 -->
+    <nav
+      class="navbar"
+      :class="{
+        'is-scrolled': isScrolled,
+        'is-transparent': !isScrolled,
+        'is-faded': isNavbarFaded,
+        'is-hidden': isNavbarHidden
+      }"
+    >
+      <div class="navbar-container">
       <!-- 🏠 Logo 区域 -->
       <div class="navbar-brand-wrapper">
         <a href="/" class="navbar-brand" @click="closeMobileMenu">
@@ -145,12 +285,13 @@ onUnmounted(() => {
       </button>
     </div>
   </nav>
+</div>
 
-  <!-- 📱 移动端菜单 -->
-  <div
-    class="navbar-mobile-menu"
-    :class="{ 'is-open': isMobileMenuOpen }"
-  >
+<!-- 📱 移动端菜单 -->
+<div
+  class="navbar-mobile-menu"
+  :class="{ 'is-open': isMobileMenuOpen }"
+>
     <a
       v-for="(link, index) in navbarConfig.links"
       :key="`mobile-${index}`"

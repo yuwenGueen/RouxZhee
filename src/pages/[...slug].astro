@@ -1,0 +1,598 @@
+---
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 📄 文档内容页路由 - 动态渲染 MD 文件
+
+/* 📁 文件系统操作 */
+import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { resolve, join, dirname } from 'path';
+
+/* 🧩 页面组件导入 */
+import Layout from '../layouts/Layout.astro';
+import NavBar from '../components/Navbar.vue';
+import DocContent from '../components/doc/DocContent.vue';
+
+/* 📋 类型定义 */
+import type { DocMeta, TocItem, DocNavigation, CategoryDoc, CategoryItem } from '../types/doc';
+
+// 🔽递归获取所有 MD 文件
+function getAllMdFiles(dir: string, basePath: string = ''): string[] {
+  const files: string[] = [];
+
+  if (!existsSync(dir)) {
+    return files;
+  }
+
+  const items = readdirSync(dir);
+
+  for (const item of items) {
+    const fullPath = join(dir, item);
+    const relativePath = basePath ? `${basePath}/${item}` : item;
+    const stat = statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      files.push(...getAllMdFiles(fullPath, relativePath));
+    } else if (item.endsWith('.md')) {
+      files.push(relativePath);
+    }
+  }
+
+  return files;
+}
+
+// 🔽从文件提取标题
+function getDocTitle(filePath: string): string {
+  if (!existsSync(filePath)) {
+    return '';
+  }
+
+  const fileContent = readFileSync(filePath, 'utf-8');
+  const frontmatterMatch = fileContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+
+  if (frontmatterMatch) {
+    const titleMatch = frontmatterMatch[1].match(/title:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (titleMatch) {
+      return titleMatch[1].trim();
+    }
+  }
+
+  return '';
+}
+
+// 🔽从文件提取自定义URL
+function getDocUrl(filePath: string): string | null {
+  if (!existsSync(filePath)) {
+    return null;
+  }
+
+  const fileContent = readFileSync(filePath, 'utf-8');
+  const frontmatterMatch = fileContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+
+  if (frontmatterMatch) {
+    const urlMatch = frontmatterMatch[1].match(/url:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (urlMatch) {
+      return urlMatch[1].trim();
+    }
+  }
+
+  return null;
+}
+
+// 🔽解析目录结构
+function parseToc(html: string): TocItem[] {
+  const toc: TocItem[] = [];
+  const headingRegex = /<h([1-6])([^>]*)>(.*?)<\/h[1-6]>/g;
+  let match;
+  let index = 0;
+
+  while ((match = headingRegex.exec(html)) !== null) {
+    const level = parseInt(match[1]);
+    const attrs = match[2];
+    const text = match[3].replace(/<[^>]*>/g, '');
+
+    const idMatch = attrs.match(/id=["']([^"']+)["']/);
+    const id = idMatch ? idMatch[1] : `heading-${index}`;
+
+    toc.push({
+      id,
+      text,
+      level
+    });
+    index++;
+  }
+
+  return toc;
+}
+
+// 🔽递归获取分类树
+function getCategoryTree(
+  dirPath: string,
+  docDir: string,
+  relativePath: string,
+  currentFilePath: string,
+  level: number = 0
+): CategoryItem[] {
+  if (!existsSync(dirPath)) {
+    return [];
+  }
+
+  const categories: CategoryItem[] = [];
+  const items = readdirSync(dirPath);
+
+  for (const item of items) {
+    const fullPath = join(dirPath, item);
+    const stat = statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      const currentRelativePath = relativePath ? `${relativePath}/${item}` : item;
+
+      const children = getCategoryTree(
+        fullPath,
+        docDir,
+        currentRelativePath,
+        currentFilePath,
+        level + 1
+      );
+
+      const docs: CategoryDoc[] = [];
+      const subItems = readdirSync(fullPath);
+
+      for (const subItem of subItems) {
+        const subFullPath = join(fullPath, subItem);
+        const subStat = statSync(subFullPath);
+
+        if (!subStat.isDirectory() && subItem.endsWith('.md')) {
+          const title = getDocTitle(subFullPath) || subItem.replace(/\.md$/, '');
+          const docRelativePath = currentRelativePath + '/' + subItem;
+          const docSlug = docRelativePath.replace(/\.md$/, '').replace(/\\/g, '/');
+          const customUrl = getDocUrl(subFullPath);
+          const slug = customUrl ? customUrl.replace(/^\//, '') : docSlug;
+          const isCurrent = subFullPath === currentFilePath;
+
+          docs.push({
+            title,
+            slug,
+            path: docRelativePath.replace(/\\/g, '/'),
+            isCurrent
+          });
+        }
+      }
+
+      const isCurrentCategory = docs.some(doc => doc.isCurrent) ||
+        children.some(child => child.isCurrentCategory);
+
+      if (docs.length > 0 || children.length > 0) {
+        categories.push({
+          name: item,
+          path: currentRelativePath,
+          docs,
+          children,
+          isExpanded: isCurrentCategory,
+          isCurrentCategory,
+          level
+        });
+      }
+    }
+  }
+
+  return categories;
+}
+
+// 🔽获取所有分类
+function getAllCategories(docDir: string, currentFilePath: string): CategoryItem[] {
+  return getCategoryTree(docDir, docDir, '', currentFilePath, 0);
+}
+
+// 🔽获取当前文档所在分类的所有文档
+function getCategoryDocs(currentFilePath: string, docDir: string): CategoryDoc[] {
+  if (!existsSync(currentFilePath)) {
+    return [];
+  }
+
+  const relativePath = currentFilePath.replace(docDir + '\\', '').replace(docDir + '/', '');
+  const categoryPath = dirname(relativePath);
+
+  if (categoryPath === '.' || categoryPath === '') {
+    return [];
+  }
+
+  const categoryFullPath = join(docDir, categoryPath);
+
+  if (!existsSync(categoryFullPath)) {
+    return [];
+  }
+
+  const docs: CategoryDoc[] = [];
+  const items = readdirSync(categoryFullPath);
+
+  for (const item of items) {
+    const fullPath = join(categoryFullPath, item);
+    const stat = statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      const subDocs = getDocsInDirectory(fullPath, docDir, categoryPath + '/' + item);
+      docs.push(...subDocs);
+    } else if (item.endsWith('.md')) {
+      const title = getDocTitle(fullPath) || item.replace(/\.md$/, '');
+      const docRelativePath = categoryPath + '/' + item;
+      const docSlug = docRelativePath.replace(/\.md$/, '').replace(/\\/g, '/');
+      const customUrl = getDocUrl(fullPath);
+      const slug = customUrl ? customUrl.replace(/^\//, '') : docSlug;
+
+      docs.push({
+        title,
+        slug,
+        path: docRelativePath.replace(/\\/g, '/'),
+        isCurrent: fullPath === currentFilePath
+      });
+    }
+  }
+
+  return docs;
+}
+
+// 🔽辅助函数：递归获取目录中的所有文档
+function getDocsInDirectory(dirPath: string, docDir: string, relativeCategoryPath: string): CategoryDoc[] {
+  const docs: CategoryDoc[] = [];
+
+  if (!existsSync(dirPath)) {
+    return docs;
+  }
+
+  const items = readdirSync(dirPath);
+
+  for (const item of items) {
+    const fullPath = join(dirPath, item);
+    const stat = statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      const subDocs = getDocsInDirectory(fullPath, docDir, relativeCategoryPath + '/' + item);
+      docs.push(...subDocs);
+    } else if (item.endsWith('.md')) {
+      const title = getDocTitle(fullPath) || item.replace(/\.md$/, '');
+      const docRelativePath = relativeCategoryPath + '/' + item;
+      const docSlug = docRelativePath.replace(/\.md$/, '').replace(/\\/g, '/');
+      const customUrl = getDocUrl(fullPath);
+      const slug = customUrl ? customUrl.replace(/^\//, '') : docSlug;
+
+      docs.push({
+        title,
+        slug,
+        path: docRelativePath.replace(/\\/g, '/'),
+        isCurrent: false
+      });
+    }
+  }
+
+  return docs;
+}
+
+// 🔽为标题添加ID
+function addHeadingIds(html: string): string {
+  let index = 0;
+  return html.replace(/<h([1-6])([^>]*)>/g, (match, level, attrs) => {
+    const id = `heading-${index}`;
+    index++;
+    if (attrs.includes('id=')) {
+      return match;
+    }
+    return `<h${level} id="${id}"${attrs}>`;
+  });
+}
+
+// 🔽获取动态路由参数
+export async function getStaticPaths() {
+  const docDir = resolve(process.cwd(), 'doc');
+
+  function getDocUrl(filePath: string): string | null {
+    if (!existsSync(filePath)) {
+      return null;
+    }
+
+    const fileContent = readFileSync(filePath, 'utf-8');
+    const frontmatterMatch = fileContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+
+    if (frontmatterMatch) {
+      const urlMatch = frontmatterMatch[1].match(/url:\s*['"]?([^'"\r\n]+)['"]?/);
+      if (urlMatch) {
+        return urlMatch[1].trim();
+      }
+    }
+
+    return null;
+  }
+
+  function getAllMdFiles(dir: string, basePath: string = ''): string[] {
+    const files: string[] = [];
+
+    if (!existsSync(dir)) {
+      return files;
+    }
+
+    const items = readdirSync(dir);
+
+    for (const item of items) {
+      const fullPath = join(dir, item);
+      const relativePath = basePath ? `${basePath}/${item}` : item;
+      const stat = statSync(fullPath);
+
+      if (stat.isDirectory()) {
+        files.push(...getAllMdFiles(fullPath, relativePath));
+      } else if (item.endsWith('.md')) {
+        files.push(relativePath);
+      }
+    }
+
+    return files;
+  }
+
+  const mdFiles = getAllMdFiles(docDir);
+
+  const paths: { params: { slug: string }; props: { filePath: string } }[] = [];
+
+  for (const file of mdFiles) {
+    const defaultSlug = file.replace(/\.md$/, '').replace(/\\/g, '/');
+    const fullPath = join(docDir, file);
+
+    const customUrl = getDocUrl(fullPath);
+
+    if (customUrl) {
+      const customSlug = customUrl.replace(/^\//, '');
+      paths.push({
+        params: { slug: customSlug },
+        props: { filePath: fullPath }
+      });
+    } else {
+      paths.push({
+        params: { slug: defaultSlug },
+        props: { filePath: fullPath }
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { slug } = Astro.params;
+const docDir = resolve(process.cwd(), 'doc');
+
+// 🔽获取所有文档
+const allMdFiles = getAllMdFiles(docDir);
+
+// 💕 构建文档映射表
+const slugToFileMap = new Map<string, string>();
+const fileToSlugMap = new Map<string, string>();
+
+for (const file of allMdFiles) {
+  const defaultSlug = file.replace(/\.md$/, '').replace(/\\/g, '/');
+  const fullPath = join(docDir, file);
+  const customUrl = getDocUrl(fullPath);
+
+  if (customUrl) {
+    const customSlug = customUrl.replace(/^\//, '');
+    slugToFileMap.set(customSlug, fullPath);
+    fileToSlugMap.set(fullPath, customSlug);
+  } else {
+    slugToFileMap.set(defaultSlug, fullPath);
+    fileToSlugMap.set(fullPath, defaultSlug);
+  }
+}
+
+// 🔽获取当前slug对应的文件路径
+const currentFilePath = slug ? slugToFileMap.get(slug) : null;
+
+// 🔽获取所有排序后的slug
+const allSlugs = allMdFiles.map(file => {
+  const fullPath = join(docDir, file);
+  return fileToSlugMap.get(fullPath) || file.replace(/\.md$/, '').replace(/\\/g, '/');
+});
+
+const currentIndex = slug ? allSlugs.indexOf(slug) : -1;
+
+// 🔽获取前后文档
+const navigation: DocNavigation = {
+  prev: null,
+  next: null
+};
+
+if (currentIndex > 0) {
+  const prevSlug = allSlugs[currentIndex - 1];
+  const prevPath = slugToFileMap.get(prevSlug);
+  if (prevPath) {
+    navigation.prev = {
+      title: getDocTitle(prevPath) || prevSlug.split('/').pop() || '',
+      slug: prevSlug
+    };
+  }
+}
+
+if (currentIndex < allSlugs.length - 1) {
+  const nextSlug = allSlugs[currentIndex + 1];
+  const nextPath = slugToFileMap.get(nextSlug);
+  if (nextPath) {
+    navigation.next = {
+      title: getDocTitle(nextPath) || nextSlug.split('/').pop() || '',
+      slug: nextSlug
+    };
+  }
+}
+
+// 🔽构建文件路径
+const filePath = currentFilePath || (slug ? join(docDir, `${slug}.md`) : '');
+
+// 🔽检查文件是否存在
+let rawContent = '';
+let meta: DocMeta = {
+  title: slug ? slug.split('/').pop() || '文档' : '文档',
+  description: '',
+  date: '',
+  readTime: '',
+  wordCount: 0,
+  category: '',
+  tags: []
+};
+
+if (existsSync(filePath)) {
+  const fileContent = readFileSync(filePath, 'utf-8');
+
+  // 🔽解析 frontmatter
+  const frontmatterMatch = fileContent.match(/^---[\t ]*\r?\n([^]*?)\r?\n---[\t ]*\r?\n([^]*)$/);
+  if (frontmatterMatch) {
+    const frontmatter = frontmatterMatch[1];
+    rawContent = frontmatterMatch[2];
+
+    // 🔽提取标题
+    const titleMatch = frontmatter.match(/title:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (titleMatch) {
+      meta.title = titleMatch[1].trim();
+    }
+
+    // 🔽提取描述
+    const descMatch = frontmatter.match(/description:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (descMatch) {
+      meta.description = descMatch[1].trim();
+    }
+
+    // 🔽提取日期
+    const dateMatch = frontmatter.match(/date:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (dateMatch) {
+      meta.date = dateMatch[1].trim();
+    }
+
+    // 🔽提取阅读时间
+    const readTimeMatch = frontmatter.match(/readTime:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (readTimeMatch) {
+      meta.readTime = readTimeMatch[1].trim();
+    }
+
+    // 🔽提取分类
+    const categoryMatch = frontmatter.match(/category:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (categoryMatch) {
+      meta.category = categoryMatch[1].trim();
+    }
+
+    // 🔽提取标签
+    const tagsArrayMatch = frontmatter.match(/tags:\s*\[([^\]]*)\]/);
+    const tagsStringMatch = frontmatter.match(/tags:\s*['"]?([^'"\r\n\[]+)['"]?/);
+
+    if (tagsArrayMatch) {
+      meta.tags = tagsArrayMatch[1]
+        .split(',')
+        .map(t => t.trim().replace(/['"]/g, ''))
+        .filter(Boolean);
+    } else if (tagsStringMatch) {
+      const tagsStr = tagsStringMatch[1];
+      meta.tags = tagsStr
+        .replace(/、/g, ',')
+        .replace(/，/g, ',')
+        .split(',')
+        .map(t => t.trim())
+        .filter(Boolean);
+    }
+
+    // 🔽提取封面图片
+    const coverMatch = frontmatter.match(/cover:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (coverMatch) {
+      meta.cover = coverMatch[1].trim();
+    }
+
+    // 🔽提取标题图标
+    const titleIconMatch = frontmatter.match(/titleIcon:\s*['"]?([^'"\r\n]+)['"]?/);
+    if (titleIconMatch) {
+      meta.titleIcon = titleIconMatch[1].trim();
+    }
+  } else {
+    rawContent = fileContent;
+  }
+
+  // 🔽计算字数
+  const wordCount = rawContent.replace(/\s/g, '').length;
+  meta.wordCount = wordCount;
+
+  // 🔽自动计算阅读时间
+  if (!meta.readTime) {
+    const readMinutes = Math.ceil(wordCount / 300);
+    meta.readTime = `${readMinutes} 分钟`;
+  }
+}
+
+// 🔽简单 Markdown 转 HTML（基础实现）
+function markdownToHtml(md: string): string {
+  let html = md
+    // 代码块
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+    // 行内代码
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // 标题
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    // 粗体
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // 斜体
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // 图片
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" title="$1">')
+    // 链接
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    // 无序列表
+    .replace(/^\s*[-*+]\s+(.+)$/gim, '<li>$1</li>')
+    // 有序列表
+    .replace(/^\s*\d+\.\s+(.+)$/gim, '<li>$1</li>')
+    // 引用块
+    .replace(/^>\s*(.+)$/gim, '<blockquote>$1</blockquote>')
+    // 分隔线
+    .replace(/^---$/gim, '<hr>')
+    // 段落
+    .replace(/\n\n/g, '</p><p>')
+    // 换行
+    .replace(/\n/g, '<br>');
+
+  return `<p>${html}</p>`;
+}
+
+const rawHtml = markdownToHtml(rawContent);
+const html = addHeadingIds(rawHtml);
+
+// 🔽解析目录
+const toc = parseToc(html);
+
+// 🔽获取当前文档所在分类的所有文档
+const categoryDocs = getCategoryDocs(filePath, docDir);
+
+// 🔽获取当前分类路径信息
+const currentRelativePath = filePath.replace(docDir + '\\', '').replace(docDir + '/', '');
+const categoryPath = dirname(currentRelativePath).replace(/\\/g, '/');
+const categoryFullPath = categoryPath;
+const categoryName = categoryPath.split('/').pop() || categoryPath;
+
+// 🔽判断是否在根目录
+const isRootDoc = categoryPath === '.' || categoryPath === '';
+const categoryTree = isRootDoc ? getAllCategories(docDir, filePath) : [];
+---
+
+<Layout title={meta.title} description={meta.description}>
+  <!-- 🧭 导航栏 -->
+  <NavBar client:load />
+
+  <!-- 📄 文档内容组件 -->
+  <DocContent
+    client:load
+    meta={meta}
+    html={html}
+    toc={toc}
+    navigation={navigation}
+    showMeta={true}
+    showToc={true}
+    titleIcon={meta.titleIcon}
+    categoryDocs={categoryDocs}
+    categoryName={categoryName}
+    categoryFullPath={categoryFullPath}
+    categoryTree={categoryTree}
+    isRootDoc={isRootDoc}
+  />
+</Layout>
+
+<style lang="scss" is:global>
+  /* 🎨 引入文档内容样式 */
+  @use '../styles/doc-content.scss' as *;
+</style>

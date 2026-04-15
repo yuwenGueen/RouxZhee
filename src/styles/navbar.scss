@@ -14,17 +14,73 @@
 }
 
 // ========================================
-// 🧭 导航栏基础样式
+// 🧭 导航栏容器（包含触发区域）
 // ========================================
-.navbar {
-  position: absolute;
+.navbar-wrapper {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: var(--nav-z-index);
+  pointer-events: none; // ◀️ 不拦截鼠标事件，让内容可点击
+
+  // 📄 导航栏和触发区域需要拦截鼠标事件
+  .navbar,
+  .navbar-trigger-area {
+    pointer-events: auto;
+  }
+}
+
+// ========================================
+// 📄 文档页面：顶部触发区域
+// ========================================
+.navbar-trigger-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px; // ◀️ 80px高的触发区域
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  z-index: calc(var(--nav-z-index) - 1);
+
+  // 🖱️ 导航栏隐藏时显示触发区域
+  &.is-visible {
+    opacity: 1;
+  }
+
+  // ✨ 悬停时显示微弱背景提示
+  &:hover {
+    background: linear-gradient(to bottom, rgba(14, 116, 144, 0.1), transparent);
+  }
+}
+
+// ========================================
+// 🧭 导航栏基础样式
+// ========================================
+.navbar {
+  position: relative;
   height: 80px;
   // 添加所有属性的过渡，确保平滑动画
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  // ✨ 透明度过渡动画
+  opacity: 1;
+  // 📄 文档页面效果：初始位置
+  transform: translateY(0);
+
+  // 🌫️ 淡出状态 - 50%透明度（普通页面效果）
+  &.is-faded {
+    opacity: 0.5;
+  }
+
+  // 📄 隐藏状态 - 上移渐隐（文档页面效果）
+  &.is-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
 
   // 🫥 顶部区域时（默认）- 页面顶部状态
   &.is-transparent {
@@ -106,14 +162,11 @@
     // 🎴 圆角卡片样式
     border-radius: 16px !important;
 
-    // 精致阴影
-    box-shadow:
-      var(--navbar-shadow-lg),
-      0 2px 8px rgba(0, 0, 0, 0.2),
-      var(--navbar-inset-highlight-strong) !important;
+    // 阴影（使用更柔和的阴影，避免描边感）
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
 
-    // 边框
-    border: var(--navbar-border) !important;
+    // 移除边框彻底避免描边
+    border: none !important;
 
     .navbar-container {
       margin: 0 20px;
@@ -402,13 +455,11 @@
   // 圆角
   border-radius: 12px;
 
-  // 阴影
-  box-shadow:
-    var(--navbar-mobile-menu-shadow),
-    var(--navbar-inset-highlight);
+  // 阴影（更柔和的阴影）
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 
-  // 边框
-  border: var(--navbar-border);
+  // 移除边框
+  border: none;
 
   // 动画
   opacity: 0;
@@ -473,11 +524,8 @@
       ) !important;
       backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
       -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate)) !important;
-      box-shadow:
-        var(--navbar-shadow-lg),
-        0 2px 8px rgba(0, 0, 0, 0.3),
-        var(--navbar-inset-highlight-strong) !important;
-      border: var(--navbar-border) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+      border: none !important;
 
       .navbar-site-name {
         color: var(--navbar-text);
@@ -502,10 +550,8 @@
     );
     backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
     -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur)) saturate(var(--navbar-scrolled-saturate));
-    box-shadow:
-      var(--navbar-mobile-menu-shadow-dark),
-      var(--navbar-inset-highlight);
-    border: var(--navbar-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border: none;
   }
 
   .navbar-mobile-link {

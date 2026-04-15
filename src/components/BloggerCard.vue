@@ -49,17 +49,45 @@
         v-html="link.icon"
       />
     </div>
+
+    <!-- 📋 备案信息 -->
+    <div v-if="hasBeian" class="blogger-beian">
+      <a
+        v-if="config.beian?.icp?.text"
+        :href="config.beian.icp.href"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="beian-link"
+      >
+        {{ config.beian.icp.text }}
+      </a>
+      <a
+        v-if="config.beian?.gongan?.text"
+        :href="config.beian.gongan.href"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="beian-link"
+      >
+        {{ config.beian.gongan.text }}
+      </a>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 /* 🔗 博主信息卡片组件脚本 */
 
+import { computed } from 'vue';
 import { bloggerConfig } from '../config/blogger.config';
 import type { BloggerConfig } from '../config/blogger.config';
 
 /* 📋 配置数据 */
 const config = bloggerConfig as BloggerConfig;
+
+/* 🔍 是否有备案信息 */
+const hasBeian = computed(() => {
+  return !!(config.beian?.icp?.text || config.beian?.gongan?.text);
+});
 </script>
 
 <style scoped lang="scss">
@@ -167,6 +195,30 @@ const config = bloggerConfig as BloggerConfig;
       }
     }
   }
+
+  /* 📋 备案信息 */
+  .blogger-beian {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--glass-border);
+    width: 100%;
+
+    .beian-link {
+      font-size: var(--beian-font-size);
+      color: var(--text-tertiary);
+      text-decoration: none;
+      transition: color var(--transition-normal);
+      line-height: 1.4;
+
+      &:hover {
+        color: var(--primary-color);
+      }
+    }
+  }
 }
 
 /* 🌙 暗色模式适配 */
@@ -190,6 +242,19 @@ const config = bloggerConfig as BloggerConfig;
       &:hover {
         background: var(--blogger-social-link-bg-hover);
         color: var(--primary-color);
+      }
+    }
+
+    /* 📋 备案信息暗色模式 */
+    .blogger-beian {
+      border-top-color: var(--glass-border);
+
+      .beian-link {
+        color: var(--text-tertiary);
+
+        &:hover {
+          color: var(--primary-color);
+        }
       }
     }
   }

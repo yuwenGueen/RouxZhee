@@ -265,6 +265,10 @@
   --blogger-social-link-bg-hover: var(rgba(139, 92, 246, 0.2));
   --blogger-social-icon-size: 20px;
 
+  // 📋 备案信息
+  --beian-font-size: 0.75rem;
+  --text-tertiary: #9ca3af;
+
   // 🃏 文档卡片封面
   --post-cover-aspect-ratio: 16 / 10;
   --post-cover-scale-hover: scale(1.05);
@@ -301,4 +305,5 @@
   --card-date-border-top: 1px solid rgba(255, 255, 255, 0.05);
   --blogger-social-link-bg: rgba(255, 255, 255, 0.05);
   --blogger-social-link-bg-hover: rgba(255, 255, 255, 0.1);
+  --text-tertiary: #6b7280;
 }

@@ -56,6 +56,24 @@ export const defaultBloggerConfig = {
       },
     ] as BloggerSocialLink[],
   },
+
+  // 📋 备案信息配置
+  beian: {
+    // ICP备案号配置（为空则不显示）
+    icp: {
+      // 备案号文本
+      text: '*ICP备**********号-*',
+      // 备案号链接
+      href: 'https://beian.miit.gov.cn/',
+    },
+    // 公安备案号配置（为空则不显示）
+    gongan: {
+      // 公安备案号文本
+      text: '*公网安备*********号',
+      // 公安备案号链接
+      href: 'https://www.beian.gov.cn/',
+    },
+  },
 } as const;
 
 // ========================================

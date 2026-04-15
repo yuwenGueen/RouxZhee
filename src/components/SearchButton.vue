@@ -9,9 +9,16 @@
     aria-label="搜索 (Ctrl+K)"
     @click="openSearch"
   >
-    <svg class="rouxzhee-search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg class="rouxzhee-search-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" style="transform: scaleX(-1);">
+      <g stroke="currentColor" stroke-linecap="round" stroke-width="2" data-swindex="0">
+        <path fill="none" stroke-dasharray="16" stroke-dashoffset="16" d="M10.5 13.5L3 21">
+          <animate attributeName="stroke-dashoffset" dur="4s" values="16;16;0;0;16;16" keyTimes="0;0.125;0.25;0.875;1;1" repeatCount="indefinite" calcMode="linear"></animate>
+        </path>
+        <path fill="currentColor" fill-opacity="0" stroke-dasharray="40" stroke-dashoffset="40" d="M10.7574 13.2426C8.41421 10.8995 8.41421 7.10051 10.7574 4.75736C13.1005 2.41421 16.8995 2.41421 19.2426 4.75736C21.5858 7.10051 21.5858 10.8995 19.2426 13.2426C16.8995 15.5858 13.1005 15.5858 10.7574 13.2426Z">
+          <animate attributeName="stroke-dashoffset" dur="4s" values="40;40;0;0;40;40" keyTimes="0;0.125;0.25;0.875;1;1" repeatCount="indefinite" calcMode="linear"></animate>
+          <animate attributeName="fill-opacity" dur="4s" values="0;0;1;1;0;0" keyTimes="0;0.125;0.25;0.875;1;1" repeatCount="indefinite" calcMode="linear"></animate>
+        </path>
+      </g>
     </svg>
     <span class="rouxzhee-search-label">搜索</span>
   </button>

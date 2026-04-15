@@ -3,6 +3,8 @@
 // 😎余温 原创开发 🔗https://wiki.xxdevops.cn
 // 基础布局组件 - 提供页面整体框架结构
 
+import FloatingToolbar from '../components/FloatingToolbar.vue';
+
 interface Props {
   title: string;
   description?: string;
@@ -23,6 +25,9 @@ const { title, description = 'RouxZhee博客' } = Astro.props;
   <body>
     <!-- 📄 页面内容 -->
     <slot />
+
+    <!-- 🧰 浮动工具栏 - 搜索/主题切换/回到顶部 -->
+    <FloatingToolbar client:only="vue" />
   </body>
 </html>
 
@@ -80,6 +85,30 @@ const { title, description = 'RouxZhee博客' } = Astro.props;
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 🌊 View Transition API 样式 */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  /* 暗色模式切换时的层级控制 */
+  html.dark-mode::view-transition-old(root) {
+    z-index: 1;
+  }
+
+  html.dark-mode::view-transition-new(root) {
+    z-index: 9999;
+  }
+
+  html:not(.dark-mode)::view-transition-old(root) {
+    z-index: 9999;
+  }
+
+  html:not(.dark-mode)::view-transition-new(root) {
+    z-index: 1;
   }
 
   // 🏷️ 标题字体

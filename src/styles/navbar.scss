@@ -21,7 +21,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: var(--nav-z-index);
+  z-index: 100;
   pointer-events: none; // ◀️ 不拦截鼠标事件，让内容可点击
 
   // 📄 导航栏和触发区域需要拦截鼠标事件
@@ -53,7 +53,7 @@
 
   // ✨ 悬停时显示微弱背景提示
   &:hover {
-    background: linear-gradient(to bottom, rgba(14, 116, 144, 0.1), transparent);
+    background: var(--navbar-trigger-hover-bg);
   }
 }
 
@@ -162,8 +162,8 @@
     // 🎴 圆角卡片样式
     border-radius: 16px !important;
 
-    // 阴影（使用更柔和的阴影，避免描边感）
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    // 阴影
+    box-shadow: var(--navbar-scrolled-shadow) !important;
 
     // 移除边框彻底避免描边
     border: none !important;
@@ -455,8 +455,8 @@
   // 圆角
   border-radius: 12px;
 
-  // 阴影（更柔和的阴影）
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  // 阴影
+  box-shadow: var(--navbar-scrolled-shadow);
 
   // 移除边框
   border: none;
@@ -511,7 +511,7 @@
         var(--navbar-transparent-bg-end) 100%
       );
       box-shadow:
-        0 4px 20px rgba(0, 0, 0, 0.2),
+        var(--navbar-dark-shadow),
         var(--navbar-inset-highlight);
     }
 

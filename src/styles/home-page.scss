@@ -9,6 +9,8 @@
   overflow-x: hidden;
   box-sizing: border-box;
   position: relative;
+  z-index: 1;
+  background: var(--bg-color);
   // 🧭 导航栏已内嵌到Banner中，不需要额外预留空间
   padding-top: 0;
 
@@ -17,7 +19,7 @@
     position: relative;
     background: var(--bg-color);
     padding: 4rem 1rem;
-    z-index: var(--content-z-index, 1);
+    z-index: 1;
     width: 100%;
     max-width: 100%;
     overflow: visible;

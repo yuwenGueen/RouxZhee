@@ -6,6 +6,22 @@
 
 <template>
   <div class="blogger-card">
+    <!-- 🖼️ 背景图片 -->
+    <div v-if="bannerBgImage && !bgError" class="blogger-card-bg-wrapper">
+      <img
+        :src="bannerBgImage"
+        alt=""
+        class="blogger-card-bg"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+        @load="handleBgLoad"
+        @error="handleBgError"
+      />
+    </div>
+    <!-- 🌫️ 背景遮罩层 -->
+    <div v-if="bannerBgImage && !bgError" class="blogger-card-overlay"></div>
+
     <!-- 🖼️ 头像区域 -->
     <div class="blogger-avatar-wrapper">
       <a
@@ -77,12 +93,34 @@
 <script setup lang="ts">
 /* 🔗 博主信息卡片组件脚本 */
 
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { bloggerConfig } from '../config/blogger.config';
+import { bannerConfig } from '../config/banner.config';
 import type { BloggerConfig } from '../config/blogger.config';
 
 /* 📋 配置数据 */
 const config = bloggerConfig as BloggerConfig;
+
+/* 🖼️ Banner背景图配置 */
+const bannerBgImage = computed(() => {
+  const images = bannerConfig.background.images;
+  return images.length > 0 ? images[0] : '';
+});
+
+/* 🖼️ 背景图加载状态 */
+const bgLoaded = ref(false);
+const bgError = ref(false);
+
+/* ✅ 背景图加载成功 */
+const handleBgLoad = () => {
+  bgLoaded.value = true;
+};
+
+/* ❌ 背景图加载失败 */
+const handleBgError = () => {
+  bgError.value = true;
+  bgLoaded.value = false;
+};
 
 /* 🔍 是否有备案信息 */
 const hasBeian = computed(() => {
@@ -95,6 +133,7 @@ const hasBeian = computed(() => {
 
 .blogger-card {
   /* 📦 基础布局 */
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -107,6 +146,42 @@ const hasBeian = computed(() => {
   box-shadow: var(--card-shadow);
   transition: all var(--transition-normal);
   z-index: 5;
+
+  /* 🖼️ 背景图片容器 */
+  .blogger-card-bg-wrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: var(--card-border-radius);
+    z-index: 0;
+
+    .blogger-card-bg {
+      height: 100%;
+      width: auto;
+      max-width: none;
+      object-fit: contain;
+    }
+  }
+
+  /* 🌫️ 背景遮罩层 */
+  .blogger-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--blogger-card-overlay-bg);
+    backdrop-filter: blur(var(--blogger-card-overlay-blur));
+    -webkit-backdrop-filter: blur(var(--blogger-card-overlay-blur));
+    border-radius: var(--card-border-radius);
+    z-index: 0;
+  }
+
+  /* 📦 确保内容在遮罩层之上 */
+  > *:not(.blogger-card-overlay):not(.blogger-card-bg-wrapper) {
+    position: relative;
+    z-index: 1;
+  }
 
   /* ✨ 悬停效果 */
   &:hover {

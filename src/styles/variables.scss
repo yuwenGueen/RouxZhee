@@ -264,6 +264,9 @@
   --blogger-social-link-bg: var(rgba(255, 255, 255, 0.1));
   --blogger-social-link-bg-hover: var(rgba(139, 92, 246, 0.2));
   --blogger-social-icon-size: 20px;
+  // 🃏 博主卡片背景遮罩
+  --blogger-card-overlay-bg: rgba(255, 255, 255, 0.15);
+  --blogger-card-overlay-blur: 8px;
 
   // 📋 备案信息
   --beian-font-size: 0.75rem;

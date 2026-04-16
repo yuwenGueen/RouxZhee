@@ -40,6 +40,13 @@
       </div>
     </a>
 
+    <!-- 🌊 波浪分割线 -->
+    <div class="post-wave-divider">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" class="wave-svg">
+        <path d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z" fill="var(--card-bg)"/>
+      </svg>
+    </div>
+
     <!-- 📝 文档信息 -->
     <div class="post-content">
       <!-- 📌 标题 -->
@@ -193,6 +200,22 @@ const handleImageError = (event: Event) => {
 
     &:hover .post-cover-icon-wrapper {
       transform: var(--card-icon-transform-hover);
+    }
+  }
+
+  /* 🌊 波浪分割线 */
+  .post-wave-divider {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    margin-top: -30px;
+    z-index: 2;
+    pointer-events: none;
+
+    .wave-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
   }
 

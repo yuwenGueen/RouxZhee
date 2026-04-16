@@ -74,9 +74,9 @@ onUnmounted(() => {
 
   &:hover {
     transform: translateY(-2px) scale(1.05);
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background: var(--search-btn-bg-hover);
     border-color: transparent;
-    box-shadow: var(--search-btn-shadow-hover);
+    box-shadow: var(--search-btn-glow-hover);
 
     .rouxzhee-search-icon {
       color: var(--banner-title-color);

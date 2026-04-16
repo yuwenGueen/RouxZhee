@@ -125,7 +125,7 @@
   top: calc(var(--nav-height) + 20px);
   left: 20px;
   width: 240px;
-  z-index: 5;
+  z-index: 1;
   max-height: calc(100vh - var(--nav-height) - 60px);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -223,7 +223,7 @@
   top: calc(var(--nav-height) + 20px);
   right: 20px;
   width: 240px;
-  z-index: 5;
+  z-index: 1;
   max-height: calc(100vh - var(--nav-height) - 60px);
   overflow-y: auto;
   scrollbar-width: thin;

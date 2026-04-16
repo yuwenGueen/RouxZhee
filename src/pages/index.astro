@@ -10,13 +10,13 @@ import HomeContent from '../components/HomeContent.vue';
 
 <Layout title="RouxZhee - 首页">
   <div class="home-page">
-    <!-- 🎯 Banner 区域 (包含导航栏) -->
-    <Banner client:only="vue" />
+    <!-- 🎯 Banner 区域 (包含导航栏) - 使用 client:visible 延迟加载优化首屏性能 -->
+    <Banner client:visible="vue" />
 
     <!-- 📄 内容区域 -->
     <div class="home-content-section" id="content">
-      <!-- 🏠 双栏内容布局 -->
-      <HomeContent client:only="vue" />
+      <!-- 🏠 双栏内容布局 - 使用 client:visible 按需加载 -->
+      <HomeContent client:visible="vue" />
     </div>
   </div>
 </Layout>

@@ -21,13 +21,54 @@ const { title, description = 'RouxZhee博客' } = Astro.props;
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+
+    <!-- ⚡ DNS 预解析 - 优化资源加载 -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
+    <!-- 🎨 字体预连接 - 减少字体加载延迟 -->
+    <link rel="preconnect" href="/fonts/ZiHun232Hao.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="/fonts/筑紫A丸.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- 🔍 关键 CSS 预加载 - 优先渲染关键路径 -->
+    <link rel="preload" as="style" href="/_astro/variables.scss" />
+
+    <!-- ⚡ 性能优化 meta 标签 -->
+    <meta name="theme-color" content="#0e7490" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- 📱 移动端优化 -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- 🌐 Open Graph 社交分享优化 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="RouxZhee博客" />
   </head>
   <body>
     <!-- 📄 页面内容 -->
     <slot />
 
-    <!-- 🧰 浮动工具栏 - 搜索/主题切换/回到顶部 -->
-    <FloatingToolbar client:only="vue" />
+    <!-- 🧰 浮动工具栏 - 搜索/主题切换/回到顶部 - 使用 client:visible 优化性能 -->
+    <FloatingToolbar client:visible="vue" />
+
+    <!-- 🔄 Service Worker 注册 - 离线缓存支持 -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('✅ Service Worker 注册成功:', registration.scope);
+            })
+            .catch((error) => {
+              console.error('❌ Service Worker 注册失败:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
 

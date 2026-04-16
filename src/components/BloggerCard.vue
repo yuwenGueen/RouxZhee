@@ -25,7 +25,7 @@
     </div>
 
     <!-- 🏷️ 博主名称 -->
-    <h3 class="blogger-name">
+    <h2 class="blogger-name">
       <a
         :href="config.homepage"
         target="_blank"
@@ -34,7 +34,7 @@
       >
         {{ config.name }}
       </a>
-    </h3>
+    </h2>
 
     <!-- 📱 社交链接 -->
     <div v-if="config.social.enabled && config.social.links.length > 0" class="blogger-social">
@@ -148,6 +148,8 @@ const hasBeian = computed(() => {
     font-weight: var(--blogger-name-font-weight);
     color: var(--text-color);
     font-family: var(--font-heading);
+    /* ♿ 确保标题样式一致性 */
+    line-height: 1.3;
 
     .blogger-name-link {
       color: inherit;
@@ -201,21 +203,33 @@ const hasBeian = computed(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
+    gap: 0;
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
     border-top: 1px solid var(--glass-border);
     width: 100%;
 
     .beian-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px; // 调整间距
+      min-width: 28px; // 调整间距
+      padding: 6px 12px;
       font-size: var(--beian-font-size);
       color: var(--text-tertiary);
       text-decoration: none;
       transition: color var(--transition-normal);
-      line-height: 1.4;
+      line-height: 1.2;
 
       &:hover {
         color: var(--primary-color);
+      }
+
+      /* 📱 移动端触摸优化 */
+      @media (hover: none) and (pointer: coarse) {
+        min-height: 48px;
+        padding: 8px 12px;
       }
     }
   }
@@ -227,7 +241,7 @@ const hasBeian = computed(() => {
     background: var(--glass-bg);
     border-color: var(--glass-border);
 
-    .blogger-name {
+    h2.blogger-name {
       color: var(--text-color);
 
       .blogger-name-link:hover {

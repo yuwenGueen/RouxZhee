@@ -1,0 +1,60 @@
+# 🕊️白木 原创开发 🔗gl.baimu.live
+# 🚀 Netlify 部署配置 - 启用压缩和优化
+
+[build]
+  # 📁 构建输出目录
+  publish = "dist"
+  # 🔨 构建命令
+  command = "npm run build"
+
+[build.environment]
+  # 🔧 Node.js 版本
+  NODE_VERSION = "20"
+
+# 🗜️ 启用 Brotli 和 Gzip 压缩
+[context.production]
+  # 启用压缩
+  compression = true
+
+# 📄 HTML 文件压缩设置
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Content-Encoding = "br"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# 📦 JS/CSS 文件压缩
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Content-Encoding = "br"
+    Cache-Control = "public, max-age=604800, immutable"
+
+# 🖼️ 图片资源（已压缩，不需要额外压缩）
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+# 🔤 字体文件压缩
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Content-Encoding = "br"
+    Cache-Control = "public, max-age=604800, immutable"
+
+# 🔒 安全响应头（全局）
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# ⚡ 重定向规则（可选）
+[[redirects]]
+  from = "/posts/*"
+  to = "/:splat"
+  status = 200

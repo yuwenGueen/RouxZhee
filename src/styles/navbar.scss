@@ -21,7 +21,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: var(--nav-z-index, 3);
   pointer-events: none; // ◀️ 不拦截鼠标事件，让内容可点击
 
   // 📄 导航栏和触发区域需要拦截鼠标事件
@@ -44,11 +44,13 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   cursor: pointer;
-  z-index: calc(var(--nav-z-index) - 1);
+  z-index: 1;
+  pointer-events: none; // ◀️ 默认不拦截鼠标事件
 
-  // 🖱️ 导航栏隐藏时显示触发区域
+  // 🖱️ 导航栏隐藏时显示触发区域并启用鼠标事件
   &.is-visible {
     opacity: 1;
+    pointer-events: auto;
   }
 
   // ✨ 悬停时显示微弱背景提示
@@ -63,6 +65,7 @@
 .navbar {
   position: relative;
   height: 80px;
+  z-index: 2;
   // 添加所有属性的过渡，确保平滑动画
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   // ✨ 透明度过渡动画
@@ -294,6 +297,7 @@
   font-weight: 500;
   text-decoration: none;
   border-radius: 8px;
+  pointer-events: auto;
   transition:
     color 0.3s ease,
     background-color 0.3s ease;

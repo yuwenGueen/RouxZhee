@@ -1,0 +1,31 @@
+# 🕊️白木 原创开发 🔗gl.baimu.live
+# 🚀 服务器缓存策略配置 - Netlify Headers
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# 🖼️ 图片资源 - 7天缓存（带内容哈希）
+/assets/*
+  Cache-Control: public, max-age=604800, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=604800, immutable
+
+# 📦 JS/CSS 资源 - 7天缓存（带内容哈希）
+/_astro/*
+  Cache-Control: public, max-age=604800, immutable
+
+# 📄 HTML 文件 - 短期缓存或 no-cache
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 🎨 SVG 图标
+/*.svg
+  Cache-Control: public, max-age=86400

@@ -12,12 +12,26 @@
       class="post-cover-wrapper"
       :aria-label="`查看文章：${post.title}`"
     >
-      <img
-        :src="post.cover"
-        :alt="post.title"
-        class="post-cover"
-        loading="lazy"
-      />
+      <picture>
+        <!-- 🎨 使用 picture 元素支持多种格式 -->
+        <source
+          v-if="!isDataUrl(post.cover)"
+          :srcset="generateSrcSet(post.cover, [400, 600, 800])"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          type="image/webp"
+        />
+        <img
+          :src="post.cover"
+          :alt="post.title"
+          class="post-cover"
+          loading="lazy"
+          decoding="async"
+          :srcset="isDataUrl(post.cover) ? undefined : generateSrcSet(post.cover)"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          @load="handleImageLoad"
+          @error="handleImageError"
+        />
+      </picture>
       <!-- ✨ 悬停遮罩 -->
       <div class="post-cover-overlay">
         <div class="post-cover-icon-wrapper">
@@ -58,6 +72,7 @@
 /* 🔗 文档内容卡片组件脚本 */
 
 import type { Post } from '../types/post';
+import { generateSrcSet } from '../utils/image';
 
 /* 📋 Props 定义 */
 interface Props {
@@ -73,6 +88,24 @@ const formatDate = (dateStr: string): string => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+};
+
+/* 🔍 检查是否为 Data URL */
+const isDataUrl = (url: string): boolean => {
+  return url.startsWith('data:');
+};
+
+/* 🖼️ 图片加载成功处理 */
+const handleImageLoad = (event: Event) => {
+  const img = event.target as HTMLImageElement;
+  img.classList.add('loaded');
+};
+
+/* ❌ 图片加载失败处理 */
+const handleImageError = (event: Event) => {
+  const img = event.target as HTMLImageElement;
+  // 使用默认占位图
+  img.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#e5e7eb"/><text x="50%" y="50%" text-anchor="middle" fill="#9ca3af" font-size="16">图片加载失败</text></svg>');
 };
 </script>
 
@@ -123,6 +156,25 @@ const formatDate = (dateStr: string): string => {
       height: 100%;
       object-fit: cover;
       transition: var(--post-cover-transition);
+      /* 🎬 图片加载过渡效果 */
+      opacity: 0;
+      animation: fadeInImage 0.5s ease-out forwards;
+
+      &.loaded {
+        opacity: 1;
+      }
+    }
+
+    /* 🎬 图片淡入动画 */
+    @keyframes fadeInImage {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     /* ✨ 悬停遮罩 */

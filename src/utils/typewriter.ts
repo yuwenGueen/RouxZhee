@@ -96,27 +96,4 @@ export class Typewriter {
   }
 }
 
-// 自动初始化函数
-export function initTypewriter(): void {
-  const subtitleEl = document.querySelector('[data-hero-subtitle]') as HTMLElement;
-  if (!subtitleEl) return;
 
-  // 解析配置
-  const itemsAttr = subtitleEl.dataset.items;
-  const items: string[] = itemsAttr ? JSON.parse(itemsAttr) : [];
-
-  if (items.length === 0) return;
-
-  const options: TypewriterOptions = {
-    items,
-    typeSpeed: parseInt(subtitleEl.dataset.typeSpeed || '90', 10),
-    deleteSpeed: parseInt(subtitleEl.dataset.deleteSpeed || '45', 10),
-    holdTime: parseInt(subtitleEl.dataset.hold || '1800', 10),
-    nextDelay: parseInt(subtitleEl.dataset.nextDelay || '600', 10),
-    shuffle: subtitleEl.dataset.shuffle === 'true',
-  };
-
-  const caret = document.querySelector('[data-hero-caret]') as HTMLElement;
-
-  new Typewriter(subtitleEl, caret, options);
-}

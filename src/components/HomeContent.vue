@@ -49,6 +49,7 @@ import { ref, onMounted, computed } from 'vue';
 import PostCard from './PostCard.vue';
 import BloggerCard from './BloggerCard.vue';
 import type { Post } from '../types/post';
+import { PerformanceMonitor } from '../utils/performance';
 
 /* 📝 文档列表数据 */
 const posts = ref<Post[]>([]);
@@ -151,6 +152,8 @@ const calculateReadTime = (content: string): string => {
 
 /* 📄 加载所有文档 */
 const loadAllPosts = async () => {
+  PerformanceMonitor.startMark('loadAllPosts');
+
   try {
     // 🗂️ 使用 import.meta.glob 加载所有 MD 文件
     const mdModules = import.meta.glob('../../doc/**/*.md', { eager: true, query: '?raw', import: 'default' });
@@ -201,8 +204,10 @@ const loadAllPosts = async () => {
     loadedPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     allPosts.value = loadedPosts;
+    PerformanceMonitor.endMark('loadAllPosts');
   } catch (error) {
     console.error('❌ 加载文档失败:', error);
+    PerformanceMonitor.endMark('loadAllPosts');
   }
 };
 

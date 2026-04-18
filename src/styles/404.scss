@@ -1,0 +1,399 @@
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 404 页面样式
+
+/* ========================================
+   🎨 404 页面样式
+   ======================================== */
+
+.rouxzhee-not-found {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--banner-gradient);
+  position: relative;
+  overflow: hidden;
+  z-index: var(--content-z-index, 1);
+}
+
+/* 🎨 几何装饰 */
+.geometric-decorations {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.shape {
+  position: absolute;
+  opacity: var(--rouxzhee-404-shape-opacity);
+  animation: float var(--duration) ease-in-out var(--delay) infinite;
+
+  &.circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--color);
+  }
+
+  &.square {
+    width: 50px;
+    height: 50px;
+    background: var(--color);
+  }
+
+  &.triangle {
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 52px solid var(--color);
+    background: transparent;
+  }
+
+  &.cross {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    position: relative;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      background: var(--color);
+    }
+
+    &::before {
+      width: 100%;
+      height: 12px;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+
+    &::after {
+      width: 12px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+    }
+  }
+
+  &.donut {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 15px solid var(--color);
+    background: transparent;
+  }
+
+  &.semicircle {
+    width: 60px;
+    height: 30px;
+    border-radius: 60px 60px 0 0;
+    background: var(--color);
+  }
+
+  &.quarter {
+    width: 50px;
+    height: 50px;
+    border-radius: 0 50px 0 0;
+    background: var(--color);
+  }
+
+  &.zigzag {
+    width: 60px;
+    height: 20px;
+    background: linear-gradient(135deg, var(--color) 25%, transparent 25%) -10px 0,
+                linear-gradient(225deg, var(--color) 25%, transparent 25%) -10px 0,
+                linear-gradient(315deg, var(--color) 25%, transparent 25%),
+                linear-gradient(45deg, var(--color) 25%, transparent 25%);
+    background-size: 20px 20px;
+    background-color: transparent;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: rotate(var(--rotation)) scale(var(--scale)) translateY(0);
+  }
+  25% {
+    transform: rotate(var(--rotation)) scale(var(--scale)) translateY(-20px);
+  }
+  50% {
+    transform: rotate(var(--rotation)) scale(var(--scale)) translateY(-10px);
+  }
+  75% {
+    transform: rotate(var(--rotation)) scale(var(--scale)) translateY(-30px);
+  }
+}
+
+/* 📦 内容区域 */
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+}
+
+/* 🔢 错误代码 */
+.error-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .digit {
+    font-size: 8rem;
+    font-weight: 900;
+    color: var(--rouxzhee-404-digit-color);
+    text-shadow: var(--rouxzhee-404-digit-shadow);
+    position: relative;
+    animation: bounce 2s ease-in-out infinite;
+
+    &:first-child {
+      animation-delay: 0s;
+    }
+
+    &:last-child {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+.zero-wrapper {
+  animation: bounce 2s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.zero {
+  width: 100px;
+  height: 120px;
+  border: 8px solid var(--rouxzhee-404-zero-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: var(--rouxzhee-404-zero-shadow);
+
+  .face {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    .eyes {
+      display: flex;
+      gap: 12px;
+
+      .eye {
+        width: 12px;
+        height: 12px;
+        background: var(--rouxzhee-404-zero-border);
+        border-radius: 50%;
+        animation: blink 3s ease-in-out infinite;
+      }
+    }
+
+    .mouth {
+      width: 24px;
+      height: 12px;
+      border: 3px solid var(--rouxzhee-404-zero-border);
+      border-top: none;
+      border-radius: 0 0 24px 24px;
+      animation: frown 3s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes blink {
+  0%, 96%, 100% {
+    transform: scaleY(1);
+  }
+  98% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes frown {
+  0%, 100% {
+    border-radius: 0 0 24px 24px;
+  }
+  50% {
+    border-radius: 24px 24px 0 0;
+    border-top: 3px solid var(--rouxzhee-404-zero-border);
+    border-bottom: none;
+  }
+}
+
+/* 📝 标题和副标题 */
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--rouxzhee-404-title-color);
+  margin-bottom: 1rem;
+  text-shadow: var(--rouxzhee-404-title-shadow);
+  font-family: var(--font-heading);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--rouxzhee-404-subtitle-color);
+  margin-bottom: 2.5rem;
+  font-family: var(--font-body);
+}
+
+/* 🔘 按钮 */
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-family: var(--font-body);
+
+  &-primary {
+    background: var(--rouxzhee-404-btn-primary-bg);
+    color: var(--rouxzhee-404-btn-primary-text);
+    box-shadow: var(--rouxzhee-404-btn-primary-shadow);
+
+    &:hover {
+      background: var(--rouxzhee-404-btn-primary-hover-bg);
+      transform: translateY(-2px);
+      box-shadow: var(--rouxzhee-404-btn-primary-hover-shadow);
+
+      .btn-icon {
+        transform: translateX(4px);
+      }
+    }
+  }
+
+  &-secondary {
+    background: var(--rouxzhee-404-btn-secondary-bg);
+    color: var(--rouxzhee-404-btn-secondary-text);
+    border: 2px solid var(--rouxzhee-404-btn-secondary-border);
+
+    &:hover {
+      background: var(--rouxzhee-404-btn-secondary-hover-bg);
+      transform: translateY(-2px);
+
+      .btn-icon {
+        transform: translateX(-4px);
+      }
+    }
+  }
+
+  &-icon {
+    transition: transform 0.3s ease;
+  }
+}
+
+/* 💡 几何提示 */
+.geometric-hints {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+
+  .hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--rouxzhee-404-hint-color);
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+
+    &-icon {
+      font-size: 1.2rem;
+      color: var(--rouxzhee-404-hint-icon-color);
+    }
+  }
+}
+
+/* ========================================
+   🙈 隐藏浮动工具栏
+   ======================================== */
+.rouxzhee-floating-toolbar {
+  display: none !important;
+}
+
+/* ========================================
+   📱 移动端适配
+   ======================================== */
+@media (max-width: 480px) {
+  .error-code {
+    .digit {
+      font-size: 5rem;
+    }
+  }
+
+  .zero {
+    width: 70px;
+    height: 85px;
+    border-width: 6px;
+
+    .face {
+      .eyes .eye {
+        width: 8px;
+        height: 8px;
+      }
+
+      .mouth {
+        width: 16px;
+        height: 8px;
+        border-width: 2px;
+      }
+    }
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}

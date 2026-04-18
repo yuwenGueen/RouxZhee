@@ -43,7 +43,7 @@
     <!-- 🌊 波浪分割线 -->
     <div class="post-wave-divider">
       <svg viewBox="0 0 1440 60" preserveAspectRatio="none" class="wave-svg">
-        <path d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z" fill="var(--card-bg)"/>
+        <path d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z" fill="var(--glass-bg-doc)"/>
       </svg>
     </div>
 
@@ -208,7 +208,7 @@ const handleImageError = (event: Event) => {
     position: relative;
     width: 100%;
     height: 30px;
-    margin-top: -30px;
+    margin-top: -28px;
     z-index: 2;
     pointer-events: none;
 

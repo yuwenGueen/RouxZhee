@@ -134,5 +134,5 @@ function goBack() {
 </script>
 
 <style lang="scss">
-@import '../styles/404.scss';
+@use '../styles/404.scss';
 </style>

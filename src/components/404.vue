@@ -134,5 +134,5 @@ function goBack() {
 </script>
 
 <style lang="scss">
-@use '../styles/404.scss';
+@use '../styles/404.scss' as error404;
 </style>

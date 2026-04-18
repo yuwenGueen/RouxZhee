@@ -52,8 +52,8 @@ const { title, description = 'RouxZhee博客' } = Astro.props;
     <!-- 📄 页面内容 -->
     <slot />
 
-    <!-- 🧰 浮动工具栏 - 搜索/主题切换/回到顶部 - 使用 client:visible 优化性能 -->
-    <FloatingToolbar client:visible="vue" />
+    <!-- 🧰 浮动工具栏 - 搜索/主题切换/回到顶部 -->
+    <FloatingToolbar client:load="vue" />
 
     <!-- 🔄 Service Worker 注册 - 离线缓存支持 -->
     <script is:inline>

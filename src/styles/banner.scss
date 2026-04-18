@@ -36,7 +36,7 @@
     background-image: var(--banner-bg-image-1, none);
     background-size: var(--banner-object-fit, cover);
     background-position: var(--banner-position, center);
-    opacity: var(--banner-bg-opacity-1, 1);
+    opacity: 0;
     z-index: 0;
     transition: opacity var(--banner-fade-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity;
@@ -54,12 +54,23 @@
     background-image: var(--banner-bg-image-2, none);
     background-size: var(--banner-object-fit, cover);
     background-position: var(--banner-position, center);
-    opacity: var(--banner-bg-opacity-2, 0);
+    opacity: 0;
     z-index: 0;
     transition: opacity var(--banner-fade-duration, 3.5s) cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity;
     backface-visibility: hidden;
     transform: translateZ(0);
+  }
+
+  // 🚀 背景加载完成后的样式
+  &.banner-bg-loaded {
+    &::before {
+      opacity: var(--banner-bg-opacity-1, 1);
+    }
+
+    &::after {
+      opacity: var(--banner-bg-opacity-2, 0);
+    }
   }
 
   // 📝 内容区域

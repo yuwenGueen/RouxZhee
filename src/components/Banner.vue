@@ -7,7 +7,10 @@
 <template>
   <section
     class="banner-section"
-    :class="{ 'banner-static': !config.background.enabled || backgroundImages.length === 0 }"
+    :class="{
+      'banner-static': !config.background.enabled || backgroundImages.length === 0,
+      'banner-bg-loaded': isBackgroundLoaded
+    }"
     :data-autoplay="config.background.autoPlay"
     :data-interval="config.background.interval"
     :style="sectionStyle"
@@ -100,8 +103,12 @@ const currentImageIndex = ref(0);
 const activeLayer = ref<'A' | 'B'>('A');
 // 🔄 API 图片缓存（用于预加载）
 const apiImageCache = ref<Record<number, string>>({});
+// 🔄 背景是否已加载（延迟加载优化）
+const isBackgroundLoaded = ref(false);
 let imageInterval: ReturnType<typeof setInterval> | null = null;
 let preloadTimeout: ReturnType<typeof setTimeout> | null = null;
+// 🔄 背景加载延迟定时器
+let bgLoadDelayTimer: ReturnType<typeof setTimeout> | null = null;
 
 /* 🔍 检测是否为图片 API（无图片后缀） */
 const isImageApi = (url: string): boolean => {
@@ -113,14 +120,15 @@ const isImageApi = (url: string): boolean => {
   return !imageExtensions.test(urlWithoutParams);
 };
 
-/* 📐 Section 样式 - 动态设置背景图片 */
+/* 📐 Section 样式 - 动态设置背景图片（延迟加载） */
 const sectionStyle = computed(() => {
   const style: Record<string, string> = {
     zIndex: 'var(--banner-z-index, 4)',
   };
 
   const images = backgroundImages.value;
-  if (images.length > 0) {
+  // 🚀 背景延迟加载：未加载完成前不设置背景图片
+  if (images.length > 0 && isBackgroundLoaded.value) {
     const fadeDuration = config.value.background.fadeDuration || 3500;
 
     // 🖼️ 计算当前和上一张图片索引
@@ -297,13 +305,32 @@ const initTypewriterEffect = (): void => {
   );
 };
 
+/* 🔄 延迟加载背景图片（优先加载导航栏和内容区域） */
+const delayLoadBackground = () => {
+  // 🚀 延迟加载背景图片，优先渲染导航栏和内容区域
+  // 使用 requestIdleCallback 或 setTimeout 确保主内容优先加载
+  const loadBg = () => {
+    isBackgroundLoaded.value = true;
+    // 🖼️ 启动背景图片轮播（异步加载 API 图片）
+    startImageRotation();
+  };
+
+  // 优先使用 requestIdleCallback，在不阻塞主线程时加载
+  if ('requestIdleCallback' in window) {
+    bgLoadDelayTimer = window.requestIdleCallback(loadBg, { timeout: 2000 });
+  } else {
+    // 降级方案：延迟 500ms 加载背景
+    bgLoadDelayTimer = setTimeout(loadBg, 500);
+  }
+};
+
 /* 🔄 组件挂载 */
 onMounted(async () => {
   // 延迟初始化打字机效果，确保 DOM 已渲染
   setTimeout(initTypewriterEffect, 100);
 
-  // 🖼️ 启动背景图片轮播（异步加载 API 图片）
-  await startImageRotation();
+  // 🚀 延迟加载背景图片（最后加载，优先渲染关键内容）
+  delayLoadBackground();
 });
 
 /* 🧹 组件卸载 */
@@ -323,6 +350,16 @@ onUnmounted(() => {
   if (preloadTimeout) {
     clearTimeout(preloadTimeout);
     preloadTimeout = null;
+  }
+
+  // ⏱️ 清理背景加载延迟定时器
+  if (bgLoadDelayTimer) {
+    if ('cancelIdleCallback' in window) {
+      window.cancelIdleCallback(bgLoadDelayTimer as number);
+    } else {
+      clearTimeout(bgLoadDelayTimer);
+    }
+    bgLoadDelayTimer = null;
   }
 
   // 🗑️ 清理 API 图片缓存

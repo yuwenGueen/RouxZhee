@@ -7,8 +7,10 @@
 // ========================================
 export interface NavLink {
   text: string;
-  href: string;
+  href?: string;
   external?: boolean;
+  // 📝 子菜单（支持多级嵌套）
+  children?: NavLink[];
 }
 
 // ========================================
@@ -44,7 +46,25 @@ export const defaultNavbarConfig = {
   // 📍 导航链接配置
   links: [
     { text: '首页', href: '/' },
-    { text: '文章', href: '/posts' },
+    {
+      text: '文档',
+      children: [
+        {
+          text: '📃 文档类说明',
+          children: [
+            { text: '📝 基础语法', href: '/basic-syntax-guide' },
+            { text: '💻 代码块语法示例', href: '/code-block-syntax-guide' },
+            { text: '🔗 链接语法示例', href: '/link-syntax-guide' },
+            { text: '🖼️ 图片语法示例', href: '/image-syntax-guide' },
+            { text: '✅ 任务语法示例', href: '/task-syntax-guide' },
+            { text: '🎴 卡片容器语法示例', href: '/card-container-syntax-guide' },
+            { text: '📄 文档表头配置说明', href: '/doc-config-guide' },
+            { text: '📊 表格语法示例', href: '/table-syntax-guide' },
+          ],
+        },
+        { text: '📄 示例文档', href: '/docs' },
+      ],
+    },
     { text: '关于', href: '/about' },
   ] as NavLink[],
 

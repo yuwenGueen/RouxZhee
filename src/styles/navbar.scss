@@ -290,6 +290,41 @@
   }
 }
 
+// 📝 导航菜单项（包含子菜单的容器）
+.navbar-menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &.has-submenu {
+    .submenu-toggle {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      .submenu-arrow {
+        font-size: 0.7rem;
+        transition: transform 0.3s ease;
+
+        // ⬇️ 旋转90度变成向下箭头
+        &.is-rotated {
+          transform: rotate(90deg);
+        }
+      }
+    }
+
+    // 展开状态
+    &.is-active {
+      > .submenu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
 .navbar-link {
   position: relative;
   padding: 8px 16px;
@@ -325,6 +360,132 @@
   &:hover::after {
     width: 60%;
     left: 20%;
+  }
+
+  // 📂 子菜单切换按钮样式
+  &.submenu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &::after {
+      display: none;
+    }
+
+    .submenu-arrow {
+      font-size: 0.7rem;
+      transition: transform 0.3s ease;
+
+      // ⬇️ 旋转90度变成向下箭头
+      &.is-rotated {
+        transform: rotate(90deg);
+      }
+    }
+  }
+}
+
+// ========================================
+// 📂 子菜单样式
+// ========================================
+.submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  padding: 8px 0;
+  // 🎨 使用变量背景色
+  background: var(--submenu-bg);
+  // 🔮 增强高斯模糊效果
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease,
+    transform 0.3s ease;
+  z-index: calc(var(--nav-z-index, 3) + 10);
+
+  // 二级菜单
+  &.level-1 {
+    margin-top: 8px;
+  }
+
+  // 三级菜单（嵌套在二级菜单项内）
+  &.level-2 {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 8px;
+    margin-top: 0;
+  }
+}
+
+// 📝 子菜单项
+.submenu-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  &.has-submenu {
+    .submenu-toggle {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+
+      .submenu-arrow {
+        font-size: 0.7rem;
+        transition: transform 0.3s ease;
+
+        // ⬇️ 旋转90度变成向下箭头
+        &.is-rotated {
+          transform: rotate(90deg);
+        }
+      }
+    }
+
+    // 展开状态
+    &.is-active {
+      > .submenu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// 🔗 子菜单链接
+.submenu-link {
+  display: block;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  // 🎨 使用子菜单文本颜色变量
+  color: var(--submenu-text);
+  white-space: nowrap;
+  // ⬆️ 添加位移过渡动画，使用 will-change 优化性能
+  will-change: transform, color;
+  transform: translateY(0) translateZ(0);
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    // 🎨 悬停时使用子菜单悬停文本颜色变量
+    color: var(--submenu-text-hover);
+    // ⬆️ 悬停时轻微上移，添加 translateZ 防止抖动
+    transform: translateY(-2px) translateZ(0);
   }
 }
 
@@ -488,6 +649,92 @@
 .navbar-mobile-link {
   padding: 12px 16px;
   font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--navbar-text-secondary);
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background-color: var(--navbar-link-active-bg);
+    color: var(--navbar-text-hover);
+  }
+}
+
+// ========================================
+// 📱 移动端多级菜单样式
+// ========================================
+.navbar-mobile-menu-item {
+  display: flex;
+  flex-direction: column;
+
+  &.has-submenu {
+    .submenu-toggle {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .submenu-arrow {
+        font-size: 0.7rem;
+        transition: transform 0.3s ease;
+
+        // ⬇️ 旋转90度变成向下箭头
+        &.is-rotated {
+          transform: rotate(90deg);
+        }
+      }
+    }
+
+  }
+}
+
+// 📱 移动端子菜单
+.mobile-submenu {
+  display: flex;
+  flex-direction: column;
+  padding-left: 16px;
+  overflow: hidden;
+
+  &.level-1 {
+    margin-top: 4px;
+  }
+
+  &.level-2 {
+    padding-left: 16px;
+    margin-top: 4px;
+  }
+}
+
+.mobile-submenu-item {
+  display: flex;
+  flex-direction: column;
+
+  &.has-submenu {
+    .submenu-toggle {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .submenu-arrow {
+        font-size: 0.7rem;
+        transition: transform 0.3s ease;
+
+        // ⬇️ 旋转90度变成向下箭头
+        &.is-rotated {
+          transform: rotate(90deg);
+        }
+      }
+    }
+  }
+}
+
+.mobile-submenu-link {
+  padding: 10px 16px;
+  font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none;
   color: var(--navbar-text-secondary);

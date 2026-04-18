@@ -2,12 +2,66 @@
   🕊️白木 原创开发 🔗gl.baimu.live
   😎余温 原创开发 🔗https://wiki.xxdevops.cn
   🧭 导航栏组件 - 双模式切换起飞🚀
+  📂 支持多级嵌套菜单
 -->
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import Clock from './Clock.vue';
-import { navbarConfig } from '../config/navbar.config';
+import { navbarConfig, type NavLink } from '../config/navbar.config';
+
+// 🎯 当前打开的菜单路径（用于控制多级菜单展开状态）
+const activeMenuPath = ref<string[]>([]);
+
+// 📝 切换子菜单展开状态
+const toggleSubmenu = (path: string[], event?: Event) => {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  const pathKey = path.join('>');
+  const parentPath = path.slice(0, -1).join('>');
+  
+  // 如果点击的是已展开的菜单，则关闭它
+  if (activeMenuPath.value.join('>').startsWith(pathKey)) {
+    // 关闭当前及子菜单，保留父级
+    if (parentPath) {
+      activeMenuPath.value = parentPath.split('>').filter(Boolean);
+    } else {
+      activeMenuPath.value = [];
+    }
+  } else {
+    // 展开新菜单，关闭同级其他菜单
+    if (parentPath) {
+      activeMenuPath.value = [...parentPath.split('>').filter(Boolean), path[path.length - 1]];
+    } else {
+      activeMenuPath.value = [path[0]];
+    }
+  }
+};
+
+// 📝 检查菜单是否展开
+const isMenuActive = (path: string[]): boolean => {
+  const currentPath = activeMenuPath.value.join('>');
+  const checkPath = path.join('>');
+  return currentPath.startsWith(checkPath);
+};
+
+// 📝 关闭所有子菜单
+const closeAllSubmenus = () => {
+  activeMenuPath.value = [];
+};
+
+// 📝 处理点击页面其他地方关闭子菜单
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  // 检查点击的是否在菜单区域内
+  const isInsideMenu = target.closest('.navbar-menu-item') !== null;
+  if (!isInsideMenu) {
+    closeAllSubmenus();
+  }
+};
 
 // 🎯 响应式状态
 const isScrolled = ref(false);
@@ -166,6 +220,9 @@ onMounted(() => {
   // 监听滚动
   window.addEventListener('scroll', handleScroll, { passive: true });
 
+  // 🖱️ 监听全局点击事件，点击菜单区域外关闭子菜单
+  document.addEventListener('click', handleClickOutside);
+
   // 延迟再次检查，确保 DOM 完全渲染
   setTimeout(checkInitialScroll, 100);
 
@@ -181,6 +238,8 @@ onMounted(() => {
 // 🧹 组件卸载
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
+  // 🖱️ 移除全局点击事件监听
+  document.removeEventListener('click', handleClickOutside);
   // 清除导航栏淡出计时器
   if (navbarFadeTimer) {
     clearTimeout(navbarFadeTimer);
@@ -234,18 +293,76 @@ onUnmounted(() => {
         </a>
       </div>
 
-      <!-- 📍 导航链接 -->
+      <!-- 📍 导航链接（支持多级菜单） -->
       <div class="navbar-menu">
-        <a
-          v-for="(link, index) in navbarConfig.links"
-          :key="`nav-${index}`"
-          :href="link.href"
-          class="navbar-link"
-          :target="link.external ? '_blank' : undefined"
-          :rel="link.external ? 'noopener noreferrer' : undefined"
-        >
-          {{ link.text }}
-        </a>
+        <template v-for="(link, index) in navbarConfig.links" :key="`nav-${index}`">
+          <!-- 🔗 有子菜单的项 -->
+          <div
+            v-if="link.children && link.children.length > 0"
+            class="navbar-menu-item has-submenu"
+            :class="{ 'is-active': isMenuActive([link.text]) }"
+          >
+            <span
+              class="navbar-link submenu-toggle"
+              @click="toggleSubmenu([link.text], $event)"
+            >
+              {{ link.text }}
+              <span class="submenu-arrow" :class="{ 'is-rotated': isMenuActive([link.text]) }">▶</span>
+            </span>
+            <!-- 📂 二级菜单 -->
+            <div class="submenu level-1">
+              <template v-for="(child, childIndex) in link.children" :key="`nav-${index}-${childIndex}`">
+                <!-- 🔗 有三级菜单的项 -->
+                <div
+                  v-if="child.children && child.children.length > 0"
+                  class="submenu-item has-submenu"
+                  :class="{ 'is-active': isMenuActive([link.text, child.text]) }"
+                >
+                  <span
+                    class="submenu-link submenu-toggle"
+                    @click="toggleSubmenu([link.text, child.text], $event)"
+                  >
+                    {{ child.text }}
+                    <span class="submenu-arrow" :class="{ 'is-rotated': isMenuActive([link.text, child.text]) }">▶</span>
+                  </span>
+                  <!-- 📂 三级菜单 -->
+                  <div class="submenu level-2">
+                    <a
+                      v-for="(grandChild, grandChildIndex) in child.children"
+                      :key="`nav-${index}-${childIndex}-${grandChildIndex}`"
+                      :href="grandChild.href"
+                      class="submenu-link"
+                      :target="grandChild.external ? '_blank' : undefined"
+                      :rel="grandChild.external ? 'noopener noreferrer' : undefined"
+                    >
+                      {{ grandChild.text }}
+                    </a>
+                  </div>
+                </div>
+                <!-- 🔗 普通二级链接 -->
+                <a
+                  v-else
+                  :href="child.href"
+                  class="submenu-link"
+                  :target="child.external ? '_blank' : undefined"
+                  :rel="child.external ? 'noopener noreferrer' : undefined"
+                >
+                  {{ child.text }}
+                </a>
+              </template>
+            </div>
+          </div>
+          <!-- 🔗 普通一级链接 -->
+          <a
+            v-else
+            :href="link.href"
+            class="navbar-link"
+            :target="link.external ? '_blank' : undefined"
+            :rel="link.external ? 'noopener noreferrer' : undefined"
+          >
+            {{ link.text }}
+          </a>
+        </template>
       </div>
 
       <!-- 🔗 右侧区域：社交链接 + 时钟 -->
@@ -287,22 +404,82 @@ onUnmounted(() => {
   </nav>
 </div>
 
-<!-- 📱 移动端菜单 -->
+<!-- 📱 移动端菜单（支持多级菜单） -->
 <div
   class="navbar-mobile-menu"
   :class="{ 'is-open': isMobileMenuOpen }"
 >
-    <a
-      v-for="(link, index) in navbarConfig.links"
-      :key="`mobile-${index}`"
-      :href="link.href"
-      class="navbar-mobile-link"
-      :target="link.external ? '_blank' : undefined"
-      :rel="link.external ? 'noopener noreferrer' : undefined"
-      @click="closeMobileMenu"
-    >
-      {{ link.text }}
-    </a>
+    <template v-for="(link, index) in navbarConfig.links" :key="`mobile-${index}`">
+      <!-- 🔗 有子菜单的项 -->
+      <div
+        v-if="link.children && link.children.length > 0"
+        class="navbar-mobile-menu-item has-submenu"
+        :class="{ 'is-active': isMenuActive([link.text]) }"
+      >
+        <span
+          class="navbar-mobile-link submenu-toggle"
+          @click="toggleSubmenu([link.text], $event)"
+        >
+          {{ link.text }}
+          <span class="submenu-arrow" :class="{ 'is-rotated': isMenuActive([link.text]) }">▶️</span>
+        </span>
+        <!-- 📂 二级菜单 -->
+        <div v-show="isMenuActive([link.text])" class="mobile-submenu level-1">
+          <template v-for="(child, childIndex) in link.children" :key="`mobile-${index}-${childIndex}`">
+            <!-- 🔗 有三级菜单的项 -->
+            <div
+              v-if="child.children && child.children.length > 0"
+              class="mobile-submenu-item has-submenu"
+              :class="{ 'is-active': isMenuActive([link.text, child.text]) }"
+            >
+              <span
+                class="mobile-submenu-link submenu-toggle"
+                @click="toggleSubmenu([link.text, child.text], $event)"
+              >
+                {{ child.text }}
+                <span class="submenu-arrow" :class="{ 'is-rotated': isMenuActive([link.text, child.text]) }">▶️</span>
+              </span>
+              <!-- 📂 三级菜单 -->
+              <div v-show="isMenuActive([link.text, child.text])" class="mobile-submenu level-2">
+                <a
+                  v-for="(grandChild, grandChildIndex) in child.children"
+                  :key="`mobile-${index}-${childIndex}-${grandChildIndex}`"
+                  :href="grandChild.href"
+                  class="mobile-submenu-link"
+                  :target="grandChild.external ? '_blank' : undefined"
+                  :rel="grandChild.external ? 'noopener noreferrer' : undefined"
+                  @click="closeMobileMenu"
+                >
+                  {{ grandChild.text }}
+                </a>
+              </div>
+            </div>
+            <!-- 🔗 普通二级链接 -->
+            <a
+              v-else
+              :href="child.href"
+              class="mobile-submenu-link"
+              :target="child.external ? '_blank' : undefined"
+              :rel="child.external ? 'noopener noreferrer' : undefined"
+              @click="closeMobileMenu"
+            >
+              {{ child.text }}
+            </a>
+          </template>
+        </div>
+      </div>
+      <!-- 🔗 普通一级链接 -->
+      <a
+        v-else
+        :href="link.href"
+        class="navbar-mobile-link"
+        :target="link.external ? '_blank' : undefined"
+        :rel="link.external ? 'noopener noreferrer' : undefined"
+        @click="closeMobileMenu"
+      >
+        {{ link.text }}
+      </a>
+    </template>
   </div>
 </template>
 

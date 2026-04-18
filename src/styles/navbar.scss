@@ -112,18 +112,18 @@
       border-radius: 0;
     }
 
-    // 顶部区域时下文字为白色
+    // 顶部区域时下文字为白色 + 粉色发光阴影
     .navbar-site-name,
     .navbar-link,
     .navbar-mobile-link {
-      color: var(--navbar-text) !important;
-      text-shadow: var(--navbar-text-shadow);
+      color: var(--navbar-glow-text) !important;
+      text-shadow: var(--navbar-glow-shadow);
     }
 
-    // ⏰ 时钟文字颜色
+    // ⏰ 时钟文字颜色 + 粉色发光阴影
     .navbar-clock {
-      color: var(--navbar-text);
-      text-shadow: var(--navbar-text-shadow);
+      color: var(--navbar-glow-text);
+      text-shadow: var(--navbar-glow-shadow);
     }
 
     // 🔗 社交链接图标颜色

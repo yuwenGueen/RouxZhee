@@ -1,0 +1,37 @@
+---
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 🔗 友链页面入口
+
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.vue';
+import FriendLink from '../components/FriendLink/FriendLink.vue';
+import { createPageSeo } from '../utils/seo';
+import { friendLinkConfig } from '../config/friend-link.config';
+import { seoConfig } from '../config/seo.config';
+
+const seo = createPageSeo({
+  title: `${friendLinkConfig.title} - ${seoConfig.siteName}`,
+  description: seoConfig.defaultDescription,
+  type: 'website',
+});
+---
+
+<Layout seo={seo} noBannerNav>
+  <div class="friend-link-layout">
+    <!-- 🧭 独立导航栏（友链页面没有 Banner，保持常驻） -->
+    <Navbar client:load disable-auto-hide no-banner />
+
+    <!-- 🔗 友链页面内容 -->
+    <FriendLink client:load />
+  </div>
+</Layout>
+
+<style lang="scss" is:global>
+  /* 与文档页一致：在 Astro 层全局注入样式，避免等 Vue hydration 才生效导致首帧错位 */
+  @use '../styles/friend-link.scss' as *;
+
+  /* 导航栏 fixed 不占文档流，避免 astro-island 包裹层额外撑高内容 */
+  .friend-link-layout > astro-island:first-child {
+    display: contents;
+  }
+</style>

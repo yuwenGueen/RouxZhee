@@ -41,8 +41,9 @@ export const userNavbarConfig: Partial<NavbarConfig> = {
         { text: '📄 示例文档', href: '/docs' },
       ],
     },
-    { text: '标签', href: '/tags', collapse: false },
-    { text: '归档', href: '/archives', collapse: true },
+    { text: '标签', href: '/tags', collapse: true }, // 显示在收纳卡片里
+    { text: '归档', href: '/archives', collapse: true }, // 显示在收纳卡片里
+    { text: '🔗 友链', href: '/friend-link', collapse: false }, // 显示在外边~
     {
       text: '关于',
       collapse: true,
@@ -52,7 +53,6 @@ export const userNavbarConfig: Partial<NavbarConfig> = {
         { text: '👥 RZ团队', href: '/team' },
       ],
     },
-    { text: '友链', href: 'https://gl.baimu.live', external: true, collapse: true },
   ] as NavLink[],
 
   // 🔗 社交链接配置

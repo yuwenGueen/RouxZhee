@@ -26,6 +26,8 @@ interface Props {
   categoryTree?: CategoryItem[];
   isRootDoc?: boolean;
   disableAutoHide?: boolean;
+  /** 无 Banner 页面：桌面端始终使用卡片模式导航栏，避免透明↔卡片切换导致内容区抖动 */
+  noBanner?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -36,7 +38,8 @@ const props = withDefaults(defineProps<Props>(), {
   categoryFullPath: '',
   categoryTree: () => [],
   isRootDoc: false,
-  disableAutoHide: false
+  disableAutoHide: false,
+  noBanner: false,
 });
 
 // 📊 计算属性：是否在移动端底座显示文档相关按钮
@@ -299,6 +302,10 @@ const toggleCategory = (path: string) => {
 
 // 🎯 响应式状态
 const isScrolled = ref(false);
+
+// 🎴 无 Banner 页面桌面端固定卡片模式，避免刷新时透明态→卡片态切换引发布局抖动
+const showCardNavbar = computed(() => (props.noBanner || isScrolled.value) && !isMobile.value);
+const showTransparentNavbar = computed(() => !props.noBanner && !isScrolled.value && !isMobile.value);
 
 type MobilePanel = 'nav' | 'toc' | 'category' | null;
 const activePanel = ref<MobilePanel>(null);
@@ -576,6 +583,18 @@ onMounted(() => {
     setTimeout(() => skeleton.remove(), 300);
   }
 
+  // 无 Banner 页：Vue 就绪后立即显示导航栏，避免骨架屏消失后长时间空白引起内容区视觉跳动
+  if (props.noBanner) {
+    document.querySelectorAll('.navbar, .navbar-wrapper, .navbar-menu, .navbar-social, .social-link').forEach((el) => {
+      if (el instanceof HTMLElement) {
+        el.style.removeProperty('opacity');
+        el.style.removeProperty('visibility');
+        el.style.removeProperty('backdrop-filter');
+        el.style.removeProperty('-webkit-backdrop-filter');
+      }
+    });
+  }
+
   // 初始化移动端检测
   isMobile.value = checkIsMobile();
 
@@ -661,8 +680,8 @@ onUnmounted(() => {
     <nav
       class="navbar"
       :class="{
-        'is-scrolled': isScrolled && !isMobile,
-        'is-transparent': !isScrolled && !isMobile,
+        'is-scrolled': showCardNavbar,
+        'is-transparent': showTransparentNavbar,
         'is-faded': isNavbarFaded,
         'is-hidden': isNavbarHidden
       }"

@@ -1,0 +1,485 @@
+// 🕊️白木 原创开发 🔗gl.baimu.live
+// 🔗 友链页面样式 - 适配 RouxZhee 主题
+
+// ========================================
+// 🎨 基础变量（继承自 variables.scss）
+// ========================================
+
+.friend-link-wrapper {
+  min-height: 100vh;
+  background: var(--bg-color);
+  // 卡片模式导航栏：top 10px + height 70px，与 --nav-height(80px) 对齐
+  padding: calc(var(--nav-height) + 40px) 20px 60px;
+}
+
+.friend-link-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// ========================================
+// 📝 页面标题
+// ========================================
+.friend-link-header {
+  margin-bottom: 40px;
+  text-align: center;
+
+  .page-title {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.05em;
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-family: var(--font-heading);
+    min-height: 1.2em;
+
+    @media (max-width: 768px) {
+      font-size: 1.875rem;
+    }
+  }
+
+  .page-title-emoji {
+    line-height: 1;
+  }
+}
+
+// ========================================
+// 🏞️ Banner 区域
+// ========================================
+.friend-link-banner {
+  position: relative;
+  border-radius: var(--card-border-radius);
+  padding: 60px 24px 40px;
+  margin-bottom: 60px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+  // 允许悬停星爆效果溢出 Banner 边界，避免被裁切
+  overflow: visible;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  .banner-small-title {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--text-color);
+    z-index: 2;
+  }
+
+  .banner-button-group {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    display: flex;
+    gap: 12px;
+    z-index: 2;
+  }
+
+  .banner-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+    border: none;
+    text-decoration: none;
+    box-sizing: border-box;
+
+    &.secondary {
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+
+      &:hover:not(:disabled) {
+        background: var(--gradient-primary);
+        color: var(--text-white);
+        border-color: transparent;
+        box-shadow: 0 4px 16px rgba(14, 116, 144, 0.3);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .banner-button-text {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      width: 5em;
+      height: 1.2em;
+      line-height: 1.2em;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .banner-button-text-original,
+    .banner-button-text-hover {
+      display: inline-block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .banner-button-text-original {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .banner-button-text-hover {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+
+    &:hover:not(:disabled) {
+      .banner-button-text-original {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+
+      .banner-button-text-hover {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  }
+}
+
+// ========================================
+// ✨ 头像滚动区域
+// ========================================
+.tags-group-all {
+  width: 100%;
+  overflow: hidden;
+  // 两行头像(100×2) + 行间距(20) + 悬停放大/阴影余量
+  padding: 48px 0 52px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.tags-group-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tags-group-row {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  backface-visibility: hidden;
+
+  &:nth-child(1) {
+    animation: infiniteScrollLeft 50s linear infinite;
+  }
+
+  &:nth-child(2) {
+    animation: infiniteScrollRight 60s linear infinite;
+  }
+}
+
+.tags-group-all:hover .tags-group-row {
+  animation-play-state: paused;
+}
+
+.tags-group-content {
+  display: flex;
+  gap: 20px;
+  padding: 0;
+  flex-wrap: nowrap;
+}
+
+.offset-start {
+  margin-left: 60px;
+}
+
+.tags-group-icon {
+  flex: 0 0 100px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  clip-path: circle(50%);
+  border: 2px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  background: var(--card-bg);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    &.irregular {
+      border-radius: 8px;
+      object-fit: contain;
+      padding: 4px;
+    }
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba(14, 116, 144, 0.2);
+    border-color: var(--primary-color);
+    z-index: 1;
+  }
+}
+
+// ========================================
+// ⭐ 星爆效果
+// ========================================
+.global-stars {
+  position: absolute;
+  // 向外扩展绘制区域，确保星爆 + 光晕不被 Banner 内边距裁切
+  inset: -24px -32px;
+  pointer-events: none;
+  z-index: 10;
+  overflow: visible;
+}
+
+.star-item {
+  position: absolute;
+  pointer-events: none;
+  width: 24px;
+  height: 24px;
+  fill: var(--star, #fff);
+  filter: drop-shadow(0 0 6px var(--glow, rgba(255, 255, 255, 0.8)));
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  transition: all 0.5s ease;
+  // 确保光晕不被 SVG 边界裁切
+  overflow: visible;
+}
+
+.global-stars.show .star-item {
+  animation:
+    starBurst 0.6s ease-out forwards,
+    starTwinkle 2s infinite alternate ease-in-out 0.6s;
+}
+
+.gstar-1 {
+  --star: #ec4899;
+  --glow: rgba(236, 72, 153, 0.6);
+}
+.gstar-2 {
+  --star: #0e7490;
+  --glow: rgba(14, 116, 144, 0.6);
+}
+.gstar-3 {
+  --star: #06b6d4;
+  --glow: rgba(6, 182, 212, 0.6);
+}
+.gstar-4 {
+  --star: #8b5cf6;
+  --glow: rgba(139, 92, 246, 0.6);
+}
+.gstar-5 {
+  --star: #22d3ee;
+  --glow: rgba(34, 211, 238, 0.6);
+}
+.gstar-6 {
+  --star: #f472b6;
+  --glow: rgba(244, 114, 182, 0.6);
+}
+
+@keyframes infiniteScrollLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes infiniteScrollRight {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes starBurst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.8;
+    transform: translate(calc(-50% + var(--offset-x, 0px)), calc(-50% + var(--offset-y, 0px))) scale(1);
+  }
+}
+
+@keyframes starTwinkle {
+  0% {
+    opacity: 0.4;
+    transform: translate(calc(-50% + var(--offset-x, 0px)), calc(-50% + var(--offset-y, 0px))) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--offset-x, 0px)), calc(-50% + var(--offset-y, 0px))) scale(1.1);
+  }
+}
+
+// ========================================
+// 📦 分组区域
+// ========================================
+.friend-link-group {
+  margin-bottom: 9rem;
+}
+
+.friend-link-group-title {
+  margin: 0 0 12px;
+}
+
+.group-desc {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 30px;
+  padding: 0 10px;
+}
+
+// ========================================
+// 🃏 友链卡片网格
+// ========================================
+.links-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 40px;
+  padding: 0 8px;
+}
+
+.links-grid__item {
+  flex: 0 0 calc(100% - 24px);
+  break-inside: avoid;
+}
+
+@media (min-width: 640px) {
+  .links-grid__item {
+    flex: 0 0 calc(50% - 24px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .links-grid__item {
+    flex: 0 0 calc(33.333% - 24px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .links-grid__item {
+    flex: 0 0 calc(25% - 24px);
+  }
+}
+
+// ========================================
+// 📱 移动端适配
+// ========================================
+@media (max-width: 768px) {
+  .friend-link-wrapper {
+    padding: calc(var(--nav-height) + 20px) 12px 40px;
+  }
+
+  .friend-link-group {
+    margin-bottom: 56px;
+  }
+
+  .friend-link-banner {
+    padding: 50px 16px 24px;
+    margin-bottom: 40px;
+
+    .banner-small-title {
+      font-size: 1rem;
+      top: 16px;
+      left: 16px;
+    }
+
+    .banner-button-group {
+      display: none;
+    }
+  }
+
+  .tags-group-all {
+    padding: 36px 0 44px;
+  }
+
+  .tags-group-wrapper {
+    gap: 16px;
+  }
+
+  .tags-group-icon {
+    flex: 0 0 76px;
+    width: 76px;
+    height: 76px;
+  }
+
+  .tags-group-content {
+    gap: 14px;
+  }
+
+  .offset-start {
+    margin-left: 40px;
+  }
+
+}
+
+// ========================================
+// 📜 页面版权信息
+// ========================================
+.friend-link-footer {
+  text-align: center;
+  padding: 32px 16px;
+  margin-top: 20px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+
+  p {
+    margin: 0;
+  }
+}
+
+// ========================================
+// ♿ 减少动画
+// ========================================
+@media (prefers-reduced-motion: reduce) {
+  .tags-group-row {
+    animation: none;
+  }
+}

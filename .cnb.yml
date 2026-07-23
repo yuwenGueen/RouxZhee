@@ -1,6 +1,8 @@
 main:
   push:
-    - runner:
+    - imports:
+        - https://cnb.cool/yuwen-gueen/secrets/-/blob/main/github.yml
+      runner:
         cpus: 4
       docker:
         build: .cnb/Dockerfile
@@ -15,6 +17,15 @@ main:
           script: |
             test -d dist
             find dist -maxdepth 2 -type f -print | head -100
+        - name: 同步到 GitHub
+          script: |
+            if [ -z "${GITHUB_TOKEN:-}" ]; then
+              echo "GITHUB_TOKEN is not set. Check yuwen-gueen/secrets/github.yml"
+              exit 1
+            fi
+            git remote remove github 2>/dev/null || true
+            git remote add github "https://x-access-token:${GITHUB_TOKEN}@github.com/yuwenGueen/RouxZhee.git"
+            git push github HEAD:main
 
 "**":
   web_trigger:

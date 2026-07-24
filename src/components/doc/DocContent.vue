@@ -256,6 +256,11 @@ import type { DocMeta, TocItem, DocNavigation, CategoryDoc, CategoryItem } from 
 import type { BeautifyPluginRuntime } from '../../types/plugins';
 import { docHref, withBase } from '../../utils/base';
 import { disabledBeautifyRuntime } from '../../utils/beautifyRuntime';
+import {
+  DOC_SCROLL_NAV_OFFSET,
+  saveDocScroll,
+  saveDocScrollAnchor,
+} from '../../utils/docScrollRestore';
 
 /* 💕 组件属性定义 */
 interface Props {
@@ -374,16 +379,11 @@ const shareTo = async (channel: string) => {
 /* 🔗 滚动到锚点 */
 const scrollToAnchor = (id: string) => {
   const element = document.getElementById(id);
-  if (element) {
-    const navHeight = 100;
-    const rect = element.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const targetPosition = rect.top + scrollTop - navHeight;
-    window.scrollTo({
-      top: targetPosition,
-      behavior: 'smooth'
-    });
-  }
+  if (!element) return;
+
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const targetTop = Math.max(0, element.getBoundingClientRect().top + scrollTop - DOC_SCROLL_NAV_OFFSET);
+  window.scrollTo({ top: targetTop, behavior: 'smooth' });
 };
 
 /* 🎯 根据滚动位置更新目录高亮 */
@@ -453,37 +453,38 @@ const handleSidebarMouseLeave = () => {
   startSidebarFadeTimer();
 };
 
-/* 🔗 保存滚动位置 */
-const saveScrollPosition = () => {
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  const path = window.location.pathname;
-  try {
-    localStorage.setItem(`scroll_${path}`, scrollTop.toString());
-  } catch (e) {
-    console.warn('Failed to save scroll position:', e);
+/* 🔗 保存滚动位置（防抖） */
+let saveScrollTimer: ReturnType<typeof setTimeout> | null = null;
+
+const flushScrollPosition = () => {
+  if (saveScrollTimer) {
+    clearTimeout(saveScrollTimer);
+    saveScrollTimer = null;
   }
+  saveDocScroll(window.pageYOffset || document.documentElement.scrollTop);
 };
 
-/* 🔗 恢复滚动位置 */
-const restoreScrollPosition = () => {
-  const path = window.location.pathname;
-  try {
-    const savedScroll = localStorage.getItem(`scroll_${path}`);
-    if (savedScroll) {
-      const scrollTop = parseInt(savedScroll, 10);
-      window.scrollTo({ top: scrollTop, behavior: 'auto' });
-    }
-  } catch (e) {
-    console.warn('Failed to restore scroll position:', e);
+const saveScrollPosition = () => {
+  if (saveScrollTimer) {
+    clearTimeout(saveScrollTimer);
   }
+
+  saveScrollTimer = setTimeout(() => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    saveDocScroll(scrollTop);
+
+    if (activeTocId.value) {
+      saveDocScrollAnchor(activeTocId.value);
+    }
+  }, 120);
 };
 
 /* ⚡ 组件挂载后处理 */
 onMounted(() => {
   currentShareUrl.value = window.location.href;
 
-  // 恢复滚动位置
-  restoreScrollPosition();
+  // 阅读位置由 Layout 首帧 inline 脚本锚点瞬时恢复，此处仅同步目录高亮，不再滚动
+  updateTocHighlight();
 
   // 监听滚动事件，保存位置
   window.addEventListener('scroll', saveScrollPosition);
@@ -491,8 +492,8 @@ onMounted(() => {
   // 监听滚动事件，更新目录高亮
   window.addEventListener('scroll', updateTocHighlight, { passive: true });
 
-  // 监听页面卸载，保存位置
-  window.addEventListener('beforeunload', saveScrollPosition);
+  // 页面卸载前立即保存，避免防抖未触发导致丢失
+  window.addEventListener('beforeunload', flushScrollPosition);
 
   // 初始化分类展开状态
   if (props.categoryTree.length > 0) {
@@ -672,12 +673,14 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', saveScrollPosition);
   window.removeEventListener('scroll', updateTocHighlight);
-  window.removeEventListener('beforeunload', saveScrollPosition);
-  // 清除侧边栏淡出计时器
+  window.removeEventListener('beforeunload', flushScrollPosition);
+  if (saveScrollTimer) {
+    clearTimeout(saveScrollTimer);
+  }
+  flushScrollPosition();
   if (sidebarFadeTimer) {
     clearTimeout(sidebarFadeTimer);
   }
-  saveScrollPosition();
 });
 </script>
 

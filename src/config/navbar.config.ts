@@ -77,6 +77,7 @@ export const defaultNavbarConfig = {
     },
     { text: '🏷️ 标签', href: '/tags', collapse: false },
     { text: '🗂️ 归档', href: '/archives', collapse: true },
+    { text: '🔗 友链', href: '/friend-link', collapse: true },
     {
       text: '关于',
       collapse: true,

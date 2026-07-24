@@ -13,7 +13,7 @@ function getPrecacheUrls() {
   return [
     `${basePath}/`,
     `${basePath}/favicon.svg`,
-    `${basePath}/fonts/ZiHun232Hao.woff2`,
+    `${basePath}/fonts/xnyt.woff2`,
     `${basePath}/fonts/tukusi-a-maru.woff2`,
   ];
 }

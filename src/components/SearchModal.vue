@@ -38,6 +38,10 @@
           />
           <button class="search-close-btn" aria-label="关闭搜索" @click="close">
             <span class="search-esc-hint">ESC</span>
+            <svg class="search-close-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </button>
         </div>
 
@@ -360,6 +364,12 @@ onUnmounted(() => {
   letter-spacing: 0.05em;
 }
 
+.search-close-icon {
+  display: none;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
 .search-body {
   max-height: min(50vh, 420px);
   overflow-y: auto;
@@ -573,22 +583,88 @@ kbd {
   .rouxzhee-search-overlay {
     padding: 0;
     align-items: stretch;
+    justify-content: stretch;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .rouxzhee-search-modal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     max-width: none;
     min-height: 100%;
+    min-height: 100dvh;
     border-radius: 0;
     border: none;
+    --search-modal-bg: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+
+    :global(.dark-mode) & {
+      --search-modal-bg: rgba(15, 23, 42, 0.55);
+    }
+  }
+
+  .search-header {
+    padding: 0.875rem 1rem;
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    font-size: 16px;
+  }
+
+  .search-close-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+  }
+
+  .search-esc-hint {
+    display: none;
+  }
+
+  .search-close-icon {
+    display: block;
   }
 
   .search-body {
     max-height: none;
     flex: 1;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .search-results {
+    padding: 0.375rem;
+  }
+
+  .search-result-item {
+    padding: 1rem;
+    gap: 0.625rem;
+    border-radius: 10px;
+
+    &.is-sub {
+      padding-left: 1.25rem;
+    }
+  }
+
+  .result-title {
+    font-size: 0.9375rem;
+  }
+
+  .result-excerpt {
+    font-size: 0.8125rem;
+  }
+
+  .search-footer {
+    padding: 0.625rem 1rem;
+    padding-bottom: calc(0.625rem + env(safe-area-inset-bottom));
+    flex-shrink: 0;
   }
 
   .search-hints {
-    gap: 0.5rem;
+    display: none;
   }
 }
 </style>

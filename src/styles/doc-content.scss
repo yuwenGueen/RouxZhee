@@ -19,6 +19,24 @@
   padding-top: calc(var(--nav-height) + 20px);
 }
 
+.doc-page.rz-beautify-doc-bg {
+  --rz-beautify-doc-bg: none;
+  --rz-beautify-doc-bg-opacity: 0.34;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--rz-beautify-doc-bg-opacity);
+    background-image: var(--rz-beautify-doc-bg);
+    background-size: 36px 36px, cover;
+    background-position: top left, center;
+    background-attachment: fixed;
+  }
+}
+
 /* ========================================
    ✨ 装饰元素
    ======================================== */
@@ -969,6 +987,72 @@
       transform: scale(1.02);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
+  }
+}
+
+/* ========================================
+   🔌 RZ Beautify 插件挂载区
+   ======================================== */
+.rz-beautify-share,
+.rz-beautify-comments {
+  margin-top: 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.rz-beautify-share {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rz-beautify-share__title {
+  color: var(--text-color);
+  font-weight: 700;
+}
+
+.rz-beautify-share__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.rz-beautify-share__button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--primary-color) 28%, transparent);
+  border-radius: 8px;
+  color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 9%, transparent);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--primary-color) 46%, transparent);
+    background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  }
+}
+
+.rz-beautify-comments {
+  min-height: 120px;
+}
+
+@media (max-width: 640px) {
+  .rz-beautify-share {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .rz-beautify-share__actions {
+    justify-content: flex-start;
   }
 }
 

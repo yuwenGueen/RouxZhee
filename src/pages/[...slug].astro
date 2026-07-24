@@ -14,6 +14,7 @@ import NavBar from '../components/Navbar.vue';
 import DocContent from '../components/doc/DocContent.vue';
 import { createPageSeo } from '../utils/seo';
 import { withBase } from '../utils/base';
+import { readBeautifyPluginRuntime } from '../utils/beautifyConfig';
 
 /* 📋 类型定义 */
 import type { DocMeta, TocItem, DocNavigation, CategoryDoc, CategoryItem } from '../types/doc';
@@ -697,6 +698,7 @@ function escapeHtml(value: string): string {
 
 const rawHtml = await markdownToHtml(rawContent, filePath, meta);
 const html = addHeadingIds(rawHtml);
+const beautifyRuntime = readBeautifyPluginRuntime();
 
 // 🔽解析目录
 const toc = parseToc(html);
@@ -758,6 +760,7 @@ const seo = createPageSeo({
     categoryFullPath={categoryFullPath}
     categoryTree={categoryTree}
     isRootDoc={isRootDoc}
+    beautifyRuntime={beautifyRuntime}
   />
 </Layout>
 

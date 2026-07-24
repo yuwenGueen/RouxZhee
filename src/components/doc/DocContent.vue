@@ -4,7 +4,12 @@
 -->
 
 <template>
-  <div class="doc-page" data-pagefind-body>
+  <div
+    class="doc-page"
+    data-pagefind-body
+    :class="{ 'rz-beautify-doc-bg': beautifyDocumentBackgroundEnabled }"
+    :style="beautifyDocumentBackgroundStyle"
+  >
     <!-- ✨ 装饰元素 -->
     <div class="doc-decorations" data-pagefind-ignore>
       <div class="decoration-circle circle-1"></div>
@@ -168,6 +173,46 @@
         <!-- 📝 文档内容 -->
         <article class="doc-content rz-content" v-html="htmlContent" ref="contentRef"></article>
 
+        <!-- 🔌 RZ Beautify: 分享与评论挂载点 -->
+        <section v-if="showBeautifyShare" class="rz-beautify-share" data-pagefind-ignore>
+          <div class="rz-beautify-share__title">快捷分享</div>
+          <div class="rz-beautify-share__actions">
+            <button
+              v-if="beautifyShareChannels.includes('wechat')"
+              type="button"
+              class="rz-beautify-share__button"
+              @click="shareTo('wechat')"
+            >
+              微信
+            </button>
+            <button
+              v-if="beautifyShareChannels.includes('qq')"
+              type="button"
+              class="rz-beautify-share__button"
+              @click="shareTo('qq')"
+            >
+              QQ
+            </button>
+            <button
+              v-if="beautifyShareChannels.includes('copy')"
+              type="button"
+              class="rz-beautify-share__button"
+              @click="shareTo('copy')"
+            >
+              {{ shareCopied ? '已复制' : '复制链接' }}
+            </button>
+          </div>
+        </section>
+
+        <section
+          v-if="showBeautifyComments"
+          class="rz-beautify-comments"
+          data-pagefind-ignore
+          :data-api-base="beautifySettings.comments.apiBase"
+        >
+          <div id="rz-beautify-comments-root"></div>
+        </section>
+
         <!-- 🔗 文档导航 - 上一篇/下一篇 -->
         <nav class="doc-navigation" data-pagefind-ignore>
           <!-- ⬅️ 上一篇 -->
@@ -208,7 +253,9 @@
 
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import type { DocMeta, TocItem, DocNavigation, CategoryDoc, CategoryItem } from '../../types/doc';
-import { docHref } from '../../utils/base';
+import type { BeautifyPluginRuntime } from '../../types/plugins';
+import { docHref, withBase } from '../../utils/base';
+import { disabledBeautifyRuntime } from '../../utils/beautifyRuntime';
 
 /* 💕 组件属性定义 */
 interface Props {
@@ -224,6 +271,7 @@ interface Props {
   categoryFullPath?: string;
   categoryTree?: CategoryItem[];
   isRootDoc?: boolean;
+  beautifyRuntime?: BeautifyPluginRuntime;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -235,7 +283,8 @@ const props = withDefaults(defineProps<Props>(), {
   categoryName: '',
   categoryFullPath: '',
   categoryTree: () => [],
-  isRootDoc: false
+  isRootDoc: false,
+  beautifyRuntime: () => disabledBeautifyRuntime,
 });
 
 /* 📊 计算属性 */
@@ -245,6 +294,38 @@ const wordCountText = computed(() => {
 });
 
 const htmlContent = computed(() => props.html);
+const activeBeautifyRuntime = computed(() => props.beautifyRuntime ?? disabledBeautifyRuntime);
+const beautifySettings = computed(() => activeBeautifyRuntime.value.settings);
+const beautifyDocumentBackgroundEnabled = computed(() =>
+  activeBeautifyRuntime.value.enabled &&
+  beautifySettings.value.documentBackground.enabled &&
+  beautifySettings.value.documentBackground.preset !== 'none'
+);
+const beautifyDocumentBackgroundStyle = computed<Record<string, string>>(() => {
+  if (!beautifyDocumentBackgroundEnabled.value) return {};
+
+  const background = beautifySettings.value.documentBackground;
+  const image = background.preset === 'custom' && background.imageUrl
+    ? `url("${withBase(background.imageUrl)}")`
+    : 'radial-gradient(circle at 24px 24px, rgba(196, 151, 78, 0.16) 1px, transparent 1px), linear-gradient(135deg, rgba(255, 249, 225, 0.92), rgba(252, 239, 195, 0.66))';
+
+  return {
+    '--rz-beautify-doc-bg': image,
+    '--rz-beautify-doc-bg-opacity': String(Math.min(Math.max(background.opacity, 0), 1)),
+  };
+});
+const beautifyShareChannels = computed(() => beautifySettings.value.share.channels);
+const showBeautifyShare = computed(() =>
+  activeBeautifyRuntime.value.enabled &&
+  beautifySettings.value.share.enabled &&
+  beautifyShareChannels.value.length > 0
+);
+const showBeautifyComments = computed(() =>
+  activeBeautifyRuntime.value.enabled &&
+  beautifySettings.value.comments.enabled
+);
+const shareCopied = ref(false);
+const currentShareUrl = ref('');
 
 const displayCategoryName = computed(() => {
   return props.categoryName || '文档列表';
@@ -268,6 +349,25 @@ const toggleCategory = (path: string) => {
     expandedCategories.value.delete(path);
   } else {
     expandedCategories.value.add(path);
+  }
+};
+
+const shareTo = async (channel: string) => {
+  const url = currentShareUrl.value || window.location.href;
+  const title = props.meta.title || document.title;
+  if (channel === 'qq') {
+    window.open(`https://connect.qq.com/widget/shareqq/index.html?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(url);
+    shareCopied.value = true;
+    setTimeout(() => {
+      shareCopied.value = false;
+    }, 1800);
+  } catch (error) {
+    console.warn('复制分享链接失败:', error);
   }
 };
 
@@ -380,6 +480,8 @@ const restoreScrollPosition = () => {
 
 /* ⚡ 组件挂载后处理 */
 onMounted(() => {
+  currentShareUrl.value = window.location.href;
+
   // 恢复滚动位置
   restoreScrollPosition();
 

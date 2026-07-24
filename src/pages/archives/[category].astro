@@ -11,6 +11,8 @@ import { createPageSeo } from '../../utils/seo';
 import { seoConfig } from '../../config/seo.config';
 import { getCategoryCloud, getPostsByCategory } from '../../utils/siteOverview';
 import { bloggerConfig } from '../../config/blogger.config';
+import { readBeautifyPluginRuntime } from '../../utils/beautifyConfig';
+import { applyBeautifyPostRules } from '../../utils/beautifyRuntime';
 
 // 📁 文档目录
 const docDir = resolve(process.cwd(), 'doc');
@@ -32,7 +34,11 @@ const { categoryName } = Astro.props;
 const decodedCategory = category || categoryName;
 
 // 📝 获取该分类下的文档
-const posts = getPostsByCategory(docDir, decodedCategory);
+const beautifyRuntime = readBeautifyPluginRuntime();
+const posts = applyBeautifyPostRules(getPostsByCategory(docDir, decodedCategory), {
+  scope: 'list',
+  runtime: beautifyRuntime,
+});
 
 const seo = createPageSeo({
   title: `${decodedCategory} - 分类 - ${seoConfig.siteName}`,

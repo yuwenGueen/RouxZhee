@@ -13,6 +13,8 @@ import { createPageSeo } from '../utils/seo';
 import { seoConfig } from '../config/seo.config';
 import { getSiteOverviewDocData } from '../utils/siteOverview';
 import { withBase } from '../utils/base';
+import { readBeautifyPluginRuntime } from '../utils/beautifyConfig';
+import { applyBeautifyPostRules } from '../utils/beautifyRuntime';
 import type { Post } from '../types/post';
 
 // 📁 文档目录
@@ -23,7 +25,11 @@ const docData = getSiteOverviewDocData(docDir);
 
 // 📝 首页文章列表优先读取 rz-tools 生成的 .site-data，保证首页和解析器同源
 const siteDataPath = resolve(process.cwd(), '.site-data/posts.json');
-const initialPosts = getInitialPosts(siteDataPath);
+const beautifyRuntime = readBeautifyPluginRuntime();
+const initialPosts = applyBeautifyPostRules(getInitialPosts(siteDataPath), {
+  scope: 'home',
+  runtime: beautifyRuntime,
+});
 
 const seo = createPageSeo({
   title: `${bannerConfig.title} - 首页`,
@@ -115,7 +121,13 @@ function calculateReadTime(content: string): string {
     <!-- 📄 内容区域 -->
     <div class="home-content-section" id="content">
       <!-- 🏠 双栏内容布局 -->
-      <HomeContent client:load categories={docData.categories} tags={docData.tags} initialPosts={initialPosts} />
+      <HomeContent
+        client:load
+        categories={docData.categories}
+        tags={docData.tags}
+        initialPosts={initialPosts}
+        beautifyRuntime={beautifyRuntime}
+      />
     </div>
   </div>
 </Layout>

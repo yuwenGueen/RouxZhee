@@ -86,17 +86,21 @@ import type { Post } from '../types/post';
 import type { CloudItem } from '../config/blogger.config';
 import { PerformanceMonitor } from '../utils/performance';
 import { withBase } from '../utils/base';
+import { applyBeautifyPostRules, disabledBeautifyRuntime } from '../utils/beautifyRuntime';
+import type { BeautifyPluginRuntime } from '../types/plugins';
 
 /* ☁️ 侧边栏云标签数据（由 Astro 页面构建时传入） */
 const props = defineProps<{
   categories?: CloudItem[];
   tags?: CloudItem[];
   initialPosts?: Post[];
+  beautifyRuntime?: BeautifyPluginRuntime;
 }>();
 
 /* ☁️ 云标签数据透传 */
 const categories = computed<CloudItem[]>(() => props.categories ?? []);
 const tags = computed<CloudItem[]>(() => props.tags ?? []);
+const activeBeautifyRuntime = computed<BeautifyPluginRuntime>(() => props.beautifyRuntime ?? disabledBeautifyRuntime);
 
 const postsPerPage = 9;
 
@@ -139,9 +143,11 @@ const getRandomCover = (): string => {
 /* 📄 默认封面（使用第一组作为后备） */
 const defaultCover = defaultCovers[0];
 
-const sortPostsByDate = (postList: Post[]): Post[] => {
-  return [...postList].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-};
+const sortPostsForDisplay = (postList: Post[]): Post[] =>
+  applyBeautifyPostRules(postList, {
+    scope: 'home',
+    runtime: activeBeautifyRuntime.value,
+  });
 
 const normalizePost = (post: Post): Post => {
   return {
@@ -159,14 +165,14 @@ const normalizePost = (post: Post): Post => {
 };
 
 const applyPosts = (postList: Post[]) => {
-  const normalizedPosts = sortPostsByDate(postList.map(normalizePost));
+  const normalizedPosts = sortPostsForDisplay(postList.map(normalizePost));
   allPosts.value = normalizedPosts;
   posts.value = normalizedPosts.slice(0, postsPerPage);
   currentPage.value = 2;
   hasMorePosts.value = normalizedPosts.length > postsPerPage;
 };
 
-const initialPostList = sortPostsByDate((props.initialPosts ?? []).map(normalizePost));
+const initialPostList = sortPostsForDisplay((props.initialPosts ?? []).map(normalizePost));
 
 /* 📝 文档列表数据 */
 const posts = ref<Post[]>(initialPostList.slice(0, postsPerPage));

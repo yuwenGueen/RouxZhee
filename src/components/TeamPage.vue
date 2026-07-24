@@ -1,7 +1,7 @@
 <!--
   🕊️白木 原创开发 🔗gl.baimu.live
   👥 RZ 团队页面组件
-  配置来源：src/页面模板/team.md
+  配置来源：src/page-templates/team.md
 -->
 
 <template>

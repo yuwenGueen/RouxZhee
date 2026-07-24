@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.rouxzhee.com/themes/rouxzhee-theme-astro/0.0.4/theme.schema.json",
+  "title": "RouxZhee Astro 主题配置",
+  "description": "由 RouxZhee Admin 根据 Schema 生成主题配置表单。",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "site": {
+      "title": "站点信息",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "站点名称",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "description": {
+          "title": "站点描述",
+          "type": "string",
+          "maxLength": 240
+        },
+        "locale": {
+          "title": "默认语言",
+          "type": "string",
+          "enum": [
+            "zh-CN"
+          ],
+          "default": "zh-CN"
+        }
+      }
+    },
+    "appearance": {
+      "title": "外观",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primaryColor": {
+          "title": "主题色",
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": "#1677ff",
+          "x-rouxzhee-control": "color"
+        },
+        "fontFamily": {
+          "title": "正文字体",
+          "type": "string",
+          "enum": [
+            "system",
+            "xnyt",
+            "zihun",
+            "tukusi"
+          ],
+          "default": "system"
+        }
+      }
+    },
+    "banner": {
+      "title": "首页横幅",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "title": "启用横幅",
+          "type": "boolean",
+          "default": true
+        },
+        "title": {
+          "title": "横幅标题",
+          "type": "string",
+          "maxLength": 80
+        },
+        "subtitles": {
+          "title": "轮播副标题",
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          }
+        }
+      }
+    },
+    "author": {
+      "title": "作者信息",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "作者名称",
+          "type": "string",
+          "maxLength": 60
+        },
+        "avatar": {
+          "title": "头像地址",
+          "type": "string",
+          "format": "uri"
+        },
+        "homepage": {
+          "title": "个人主页",
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  }
+}

@@ -14,7 +14,7 @@ function getPrecacheUrls() {
     `${basePath}/`,
     `${basePath}/favicon.svg`,
     `${basePath}/fonts/ZiHun232Hao.woff2`,
-    `${basePath}/fonts/筑紫A丸.woff2`,
+    `${basePath}/fonts/tukusi-a-maru.woff2`,
   ];
 }
 

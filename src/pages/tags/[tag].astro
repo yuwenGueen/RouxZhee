@@ -11,6 +11,8 @@ import { createPageSeo } from '../../utils/seo';
 import { seoConfig } from '../../config/seo.config';
 import { getTagCloud, getPostsByTag } from '../../utils/siteOverview';
 import { bloggerConfig } from '../../config/blogger.config';
+import { readBeautifyPluginRuntime } from '../../utils/beautifyConfig';
+import { applyBeautifyPostRules } from '../../utils/beautifyRuntime';
 
 // 📁 文档目录
 const docDir = resolve(process.cwd(), 'doc');
@@ -32,7 +34,11 @@ const { tagName } = Astro.props;
 const decodedTag = tag || tagName;
 
 // 📝 获取该标签下的文档
-const posts = getPostsByTag(docDir, decodedTag);
+const beautifyRuntime = readBeautifyPluginRuntime();
+const posts = applyBeautifyPostRules(getPostsByTag(docDir, decodedTag), {
+  scope: 'list',
+  runtime: beautifyRuntime,
+});
 
 const seo = createPageSeo({
   title: `${decodedTag} - 标签 - ${seoConfig.siteName}`,

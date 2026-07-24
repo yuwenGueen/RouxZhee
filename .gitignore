@@ -12,6 +12,11 @@ node_modules
 dist
 dist-ssr
 coverage
+.release/
+*.rztheme
+*.rztheme.sha256
+*.rzplugin
+*.rzplugin.sha256
 *.local
 
 # build output

@@ -1,7 +1,7 @@
 ---
 // 🕊️白木 原创开发 🔗gl.baimu.live
 // 👥 RZ 团队页面入口
-// 配置来源：src/页面模板/team.md
+// 配置来源：src/page-templates/team.md
 
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.vue';
@@ -11,7 +11,7 @@ import { withBase } from '../utils/base';
 import type { TeamConfig } from '../types/team';
 
 /* 📖 读取团队页面 MD 配置 */
-const teamModules = import.meta.glob('../页面模板/team.md', { eager: true }) as Record<
+const teamModules = import.meta.glob('../page-templates/team.md', { eager: true }) as Record<
   string,
   { frontmatter?: Record<string, any> }
 >;

@@ -1,7 +1,7 @@
 {
   "name": "rouxzhee-blog",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "scripts": {
     "dev": "node scripts/rz-start.mjs dev",
     "start": "node scripts/rz-start.mjs start",
@@ -11,6 +11,7 @@
     "astro:dev": "astro dev",
     "astro:build": "astro build",
     "postbuild": "node scripts/pagefind-build.mjs && node scripts/sync-pagefind.mjs",
+    "package:theme": "node scripts/package-theme.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

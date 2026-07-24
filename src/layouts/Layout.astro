@@ -6,12 +6,14 @@
 import FloatingToolbar from '../components/FloatingToolbar.vue';
 import Footer from '../components/Footer.vue';
 import SearchModal from '../components/SearchModal.vue';
+import BeautifyRuntime from '../components/plugins/BeautifyRuntime.vue';
 import SeoHead from '../components/seo/SeoHead.astro';
 import { seoConfig } from '../config/seo.config';
 import { navbarConfig } from '../config/navbar.config';
 import { resolvePageSeo } from '../utils/seo';
 import { getSiteUrl } from '../utils/site';
 import { withBase } from '../utils/base';
+import { readBeautifyPluginRuntime } from '../utils/beautifyConfig';
 import type { SeoPageInput } from '../types/seo';
 
 interface Props {
@@ -35,6 +37,13 @@ const seo = resolvePageSeo(
   Astro.url.pathname,
   Astro.site?.href.replace(/\/$/, '') || getSiteUrl()
 );
+const beautifyRuntime = readBeautifyPluginRuntime();
+const beautifyAnalytics = beautifyRuntime.settings.analytics;
+const shouldLoadUmami =
+  beautifyRuntime.enabled &&
+  beautifyAnalytics.provider === 'umami' &&
+  Boolean(beautifyAnalytics.publicScriptUrl) &&
+  Boolean(beautifyAnalytics.websiteId);
 ---
 
 <!DOCTYPE html>
@@ -168,6 +177,14 @@ const seo = resolvePageSeo(
     <!-- 🔍 SEO 组件 -->
     <SeoHead seo={seo} />
 
+    {shouldLoadUmami && (
+      <script
+        defer
+        src={beautifyAnalytics.publicScriptUrl}
+        data-website-id={beautifyAnalytics.websiteId}
+      />
+    )}
+
     <!-- 🔤 全局字体定义（动态生成，自动适配子路径前缀） -->
     <style set:html={`
       @font-face {
@@ -179,14 +196,14 @@ const seo = resolvePageSeo(
       }
       @font-face {
         font-family: 'ZiHun232Hao';
-        src: url('${withBase('/fonts/xnyt.woff2')}') format('woff2');
+        src: url('${withBase('/fonts/ZiHun232Hao.woff2')}') format('woff2');
         font-weight: normal;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: 'TukusiAMaru';
-        src: url('${withBase('/fonts/筑紫A丸.woff2')}') format('woff2');
+        src: url('${withBase('/fonts/tukusi-a-maru.woff2')}') format('woff2');
         font-weight: normal;
         font-style: normal;
         font-display: swap;
@@ -199,7 +216,7 @@ const seo = resolvePageSeo(
 
     <!-- 🎨 字体预加载 - 减少字体加载延迟 -->
     <link rel="preload" href={withBase('/fonts/xnyt.woff2')} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={withBase('/fonts/筑紫A丸.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase('/fonts/tukusi-a-maru.woff2')} as="font" type="font/woff2" crossorigin />
 
   </head>
   <body>
@@ -233,6 +250,9 @@ const seo = resolvePageSeo(
 
     <!-- 🔍 搜索弹窗 -->
     <SearchModal client:load />
+
+    <!-- 🔌 RZ Beautify 全局主题运行时 -->
+    <BeautifyRuntime client:load runtime={beautifyRuntime} />
 
     <!-- 🛡️ 移除骨架屏 -->
     <script is:inline>

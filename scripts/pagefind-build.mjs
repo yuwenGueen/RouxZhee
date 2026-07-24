@@ -7,10 +7,13 @@ import { resolve } from 'node:path';
 
 const siteDir = resolve(process.cwd(), 'dist');
 const args = ['--site', siteDir];
+const isWindows = process.platform === 'win32';
+const executable = isWindows ? 'cmd' : 'pagefind';
+const executableArgs = isWindows ? ['/c', 'pagefind.cmd', ...args] : args;
 
-const child = spawn('pagefind', args, {
+const child = spawn(executable, executableArgs, {
   stdio: 'inherit',
-  shell: true,
+  shell: false,
 });
 
 child.on('error', (error) => {

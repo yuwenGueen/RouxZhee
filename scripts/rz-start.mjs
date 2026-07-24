@@ -32,8 +32,12 @@ try {
     throw new Error(`Unsupported mode "${mode}". Use dev, start, build, or export.`);
   }
 
-  const rzToolsPath = await ensureRzTools();
-  await exportContent(rzToolsPath);
+  if (process.env.ROUXZHEE_TOOLS_SKIP_EXPORT === '1') {
+    log('Skipping content export because ROUXZHEE_TOOLS_SKIP_EXPORT=1.');
+  } else {
+    const rzToolsPath = await ensureRzTools();
+    await exportContent(rzToolsPath);
+  }
 
   if (mode !== 'export') {
     const astroCommand = mode === 'build' ? 'build' : 'dev';
@@ -336,11 +340,6 @@ async function extractDarwinArchive(archivePath) {
 }
 
 async function exportContent(rzToolsPath) {
-  if (process.env.ROUXZHEE_TOOLS_SKIP_EXPORT === '1') {
-    log('Skipping content export because ROUXZHEE_TOOLS_SKIP_EXPORT=1.');
-    return;
-  }
-
   const contentDir = path.resolve(projectRoot, process.env.ROUXZHEE_CONTENT_DIR || 'doc');
   const outputDir = path.resolve(projectRoot, process.env.ROUXZHEE_SITE_DATA_DIR || '.site-data');
 

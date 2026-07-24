@@ -157,7 +157,7 @@ RouxZhee/
 │   ├── styles/         # SCSS 样式
 │   ├── types/          # TypeScript 类型定义
 │   ├── utils/          # 工具函数
-│   └── 页面模板/        # Markdown 页面模板
+│   └── page-templates/  # Markdown 页面模板
 ├── public/             # 静态资源
 ├── scripts/            # 构建 / 启动 / 搜索索引脚本
 ├── doc/                # 博客文档内容
@@ -223,6 +223,21 @@ export const userBannerConfig = {
 ```bash
 npm run astro:build
 npm run postbuild
+```
+
+### 📦 生成商城主题包
+
+商城上传的是主题源码发布包，不是 Astro 的 `dist/` 构建目录：
+
+```bash
+npm run package:theme
+```
+
+产物和 SHA256 校验文件生成在 `.release/`：
+
+```text
+.release/rouxzhee-theme-astro-<version>.rztheme
+.release/rouxzhee-theme-astro-<version>.rztheme.sha256
 ```
 
 ---

@@ -100,7 +100,7 @@ export const defaultSiteOverviewConfig: SiteOverviewConfig = {
     status: 'resolved',
   },
 
-  // 👤 拥有者 & 备案信息（从博主 / 关于配置读取）
+  // 👤 拥有者 & 备案信息（从博主 blogger.config.ts / 关于配置读取）
   owner: {
     name: aboutConfig.hero.name,
     contact: aboutConfig.footer.email,

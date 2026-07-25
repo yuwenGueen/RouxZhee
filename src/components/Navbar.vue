@@ -147,6 +147,23 @@ const longMoreLinks = computed(() =>
   moreLinks.value.filter((link) => link.children && link.children.length > 0)
 );
 
+// ✂️ 导航文本截断：最多保留 max 个字符（按视觉字素计算），超出追加省略号
+const truncateNavText = (text: string, max = 7) => {
+  if (!text) return '';
+  const chars = Array.from(text);
+  if (chars.length <= max) return text;
+  return chars.slice(0, max).join('') + '…';
+};
+
+// 💬 更多菜单项悬停提示：显示完整文本
+const onMoreItemEnter = (text: string) => {
+  if (!text) return;
+  showHint(text);
+};
+const onMoreItemLeave = () => {
+  hideHint();
+};
+
 // 📝 切换子菜单展开状态
 const toggleSubmenu = (path: string[], event?: Event) => {
   if (event) {
@@ -1020,6 +1037,10 @@ onUnmounted(() => {
           </svg>
         </button>
       </div>
+      <!-- 💬 更多菜单悬停提示气泡 -->
+      <div class="navbar-more-hint">
+        <HintPill placement="more-panel" />
+      </div>
       <div class="navbar-more-waterfall" :class="`cols-${moreColumns}`">
         <!-- 🏷️ 先渲染短卡片，便于在瀑布流中向上堆叠 -->
         <template v-for="(link, index) in shortMoreLinks" :key="`more-short-${index}`">
@@ -1029,14 +1050,22 @@ onUnmounted(() => {
             :target="link.external ? '_blank' : undefined"
             :rel="link.external ? 'noopener noreferrer' : undefined"
             @click="closeMoreMenu"
+            @mouseenter="onMoreItemEnter(link.text)"
+            @mouseleave="onMoreItemLeave"
           >
-            <span class="navbar-more-card-label">{{ link.text }}</span>
+            <span class="navbar-more-card-label">{{ truncateNavText(link.text) }}</span>
           </a>
         </template>
         <!-- 📂 再渲染带子菜单的长卡片 -->
         <template v-for="(link, index) in longMoreLinks" :key="`more-long-${index}`">
           <div class="navbar-more-card has-children">
-            <div class="navbar-more-parent">{{ link.text }}</div>
+            <div
+              class="navbar-more-parent"
+              @mouseenter="onMoreItemEnter(link.text)"
+              @mouseleave="onMoreItemLeave"
+            >
+              {{ truncateNavText(link.text) }}
+            </div>
             <div class="navbar-more-children">
               <!-- 🏷️ 没有子菜单的二级链接 -->
               <a
@@ -1047,13 +1076,21 @@ onUnmounted(() => {
                 :target="child.external ? '_blank' : undefined"
                 :rel="child.external ? 'noopener noreferrer' : undefined"
                 @click="closeMoreMenu"
+                @mouseenter="onMoreItemEnter(child.text)"
+                @mouseleave="onMoreItemLeave"
               >
-                {{ child.text }}
+                {{ truncateNavText(child.text) }}
               </a>
               <!-- 📂 有子菜单的二级链接（展示三级菜单） -->
               <template v-for="(child, childIndex) in link.children?.filter((c) => c.children && c.children.length > 0)" :key="`more-long-${index}-long-${childIndex}`">
                 <div class="navbar-more-grandchild-group">
-                  <div class="navbar-more-grandchild-title">{{ child.text }}</div>
+                  <div
+                    class="navbar-more-grandchild-title"
+                    @mouseenter="onMoreItemEnter(child.text)"
+                    @mouseleave="onMoreItemLeave"
+                  >
+                    {{ truncateNavText(child.text) }}
+                  </div>
                   <a
                     v-for="(grandChild, grandChildIndex) in child.children"
                     :key="`more-long-${index}-long-${childIndex}-${grandChildIndex}`"
@@ -1062,8 +1099,10 @@ onUnmounted(() => {
                     :target="grandChild.external ? '_blank' : undefined"
                     :rel="grandChild.external ? 'noopener noreferrer' : undefined"
                     @click="closeMoreMenu"
+                    @mouseenter="onMoreItemEnter(grandChild.text)"
+                    @mouseleave="onMoreItemLeave"
                   >
-                    {{ grandChild.text }}
+                    {{ truncateNavText(grandChild.text) }}
                   </a>
                 </div>
               </template>

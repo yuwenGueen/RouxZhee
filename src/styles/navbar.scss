@@ -714,6 +714,18 @@
   color: var(--text-color);
 }
 
+// 💬 更多菜单悬停提示气泡容器
+.navbar-more-hint {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .navbar-more-close {
   display: flex;
   align-items: center;
@@ -808,6 +820,9 @@
   color: var(--text-color);
   line-height: 1.4;
   word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar-more-parent {
@@ -816,6 +831,9 @@
   color: var(--primary-color);
   margin-bottom: 8px;
   word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar-more-children {
@@ -847,6 +865,9 @@
   color: var(--text-secondary);
   text-decoration: none;
   border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
@@ -898,6 +919,9 @@
   color: var(--text-color);
   line-height: 1.4;
   word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navbar-more-grandchild {

@@ -8,7 +8,7 @@
 import { useHintPill } from '../composables/useHintPill';
 
 interface Props {
-  placement?: 'center' | 'nav-left';
+  placement?: 'center' | 'nav-left' | 'more-panel';
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -77,6 +77,18 @@ const { hintText, visible } = useHintPill();
 
     &.is-visible {
       transform: translateY(-50%) translateY(0);
+    }
+  }
+
+  // 📍 更多菜单面板：相对定位，用于放在固定面板内的提示容器中居中显示
+  &.is-more-panel {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: translateY(4px);
+
+    &.is-visible {
+      transform: translateY(0);
     }
   }
 

@@ -86,6 +86,7 @@ export const defaultBloggerConfig = {
   },
 
   // 📋 备案信息配置
+  // 本地环境修改后需要重启项目才生效
   beian: {
     // ICP备案号配置（为空则不显示）
     icp: {

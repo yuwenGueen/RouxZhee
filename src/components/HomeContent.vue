@@ -86,6 +86,7 @@ import type { Post } from '../types/post';
 import type { CloudItem } from '../config/blogger.config';
 import { PerformanceMonitor } from '../utils/performance';
 import { withBase } from '../utils/base';
+import { resolveCoverUrl } from '../utils/image';
 import { applyBeautifyPostRules, disabledBeautifyRuntime } from '../utils/beautifyRuntime';
 import type { BeautifyPluginRuntime } from '../types/plugins';
 
@@ -271,7 +272,7 @@ const loadAllPosts = async () => {
         slug,
         title: frontmatter.title || slug,
         description: frontmatter.description || extractDescription(rawContent),
-        cover: withBase(frontmatter.cover || getRandomCover()),
+        cover: resolveCoverUrl(withBase(frontmatter.cover || getRandomCover()), slug),
         date: frontmatter.date || new Date().toISOString().split('T')[0],
         url: withBase(frontmatter.url || `/posts/${slug}`),
         tags: parseTags(frontmatter.tags),

@@ -13,6 +13,7 @@ import { createPageSeo } from '../utils/seo';
 import { seoConfig } from '../config/seo.config';
 import { getSiteOverviewDocData } from '../utils/siteOverview';
 import { withBase } from '../utils/base';
+import { resolveCoverUrl } from '../utils/image';
 import { readBeautifyPluginRuntime } from '../utils/beautifyConfig';
 import { applyBeautifyPostRules } from '../utils/beautifyRuntime';
 import type { Post } from '../types/post';
@@ -58,7 +59,7 @@ function getInitialPosts(filePath: string): Post[] {
           slug,
           title,
           description: String(frontMatter.description || extractDescription(content)),
-          cover: withBase(String(frontMatter.cover || '/assets/shiroki.avif')),
+          cover: resolveCoverUrl(withBase(String(frontMatter.cover || '/assets/shiroki.avif')), slug),
           date: String(frontMatter.date || ''),
           url: withBase(String(frontMatter.url || `/${slug}`)),
           tags: parseTags(frontMatter.tags),

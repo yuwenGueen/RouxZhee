@@ -91,6 +91,7 @@ import Navbar from './Navbar.vue';
 import { bannerConfig } from '../config/banner.config';
 import type { BannerConfig } from '../config/banner.config';
 import { Typewriter } from '../utils/typewriter';
+import { isImageApi } from '../utils/image';
 
 /* 📋 配置数据 */
 const config = ref<BannerConfig>(bannerConfig);
@@ -109,16 +110,6 @@ let imageInterval: ReturnType<typeof setInterval> | null = null;
 let preloadTimeout: ReturnType<typeof setTimeout> | null = null;
 // 🔄 背景加载延迟定时器
 let bgLoadDelayTimer: ReturnType<typeof setTimeout> | null = null;
-
-/* 🔍 检测是否为图片 API（无图片后缀） */
-const isImageApi = (url: string): boolean => {
-  if (!url) return false;
-  // 检查常见的图片后缀
-  const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico|tiff?)$/i;
-  // 移除查询参数后检查后缀
-  const urlWithoutParams = url.split('?')[0];
-  return !imageExtensions.test(urlWithoutParams);
-};
 
 /* 📐 Section 样式 - 动态设置背景图片（延迟加载） */
 const sectionStyle = computed(() => {

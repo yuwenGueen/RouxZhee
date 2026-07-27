@@ -5,6 +5,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import type { CloudItem } from '../config/site.config';
 import type { Post } from '../types/post';
+import { resolveCoverUrl } from './image';
 
 /* 📋 文档元数据 */
 export interface DocFrontmatter {
@@ -13,6 +14,8 @@ export interface DocFrontmatter {
   date: string;
   category: string;
   tags: string[];
+  cover?: string;
+  url?: string;
 }
 
 /* 📋 文档统计 */
@@ -81,6 +84,18 @@ function parseFrontmatter(fileContent: string): Partial<DocFrontmatter> {
   const categoryMatch = frontmatter.match(/category:\s*['"]?([^'"\r\n]+)['"]?/);
   if (categoryMatch) {
     result.category = categoryMatch[1].trim();
+  }
+
+  // 封面
+  const coverMatch = frontmatter.match(/cover:\s*['"]?([^'"\r\n]+)['"]?/);
+  if (coverMatch) {
+    result.cover = coverMatch[1].trim();
+  }
+
+  // 自定义 URL
+  const urlMatch = frontmatter.match(/url:\s*['"]?([^'"\r\n]+)['"]?/);
+  if (urlMatch) {
+    result.url = urlMatch[1].trim();
   }
 
   // 标签
@@ -253,7 +268,7 @@ function getPostFromFile(filePath: string, docDir: string): Post | null {
     slug,
     title: frontmatter.title,
     description,
-    cover: frontmatter.cover || '/assets/shiroki.avif',
+    cover: resolveCoverUrl(frontmatter.cover || '/assets/shiroki.avif', slug),
     date: frontmatter.date || new Date().toISOString().split('T')[0],
     url: `/${url}`,
     tags: frontmatter.tags || [],

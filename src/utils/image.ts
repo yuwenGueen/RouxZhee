@@ -1,6 +1,31 @@
 // 🕊️白木 原创开发 🔗gl.baimu.live
 // 🖼️ 图片优化工具函数 - 提供响应式图片和懒加载支持
 
+const IMAGE_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp|svg|avif|bmp|ico|tiff?)$/i;
+
+/**
+ * 🔍 检测是否为随机图片 API（无图片后缀的外部 URL）
+ * 例如 https://mu.baimu.live/img/mn 每次请求返回不同图片
+ */
+export const isImageApi = (url: string): boolean => {
+  if (!url || url.startsWith('data:')) return false;
+  if (!/^https?:\/\//i.test(url)) return false;
+  const path = url.split('?')[0].split('#')[0];
+  return !IMAGE_EXTENSIONS.test(path);
+};
+
+/**
+ * 🎲 为图片 API 封面追加唯一标识，避免浏览器缓存导致多卡片显示相同图片
+ * @param cover 封面 URL
+ * @param seed 唯一标识（通常使用文档 slug）
+ */
+export const resolveCoverUrl = (cover: string, seed?: string): string => {
+  if (!cover || !seed || !isImageApi(cover)) return cover;
+  if (/[?&]seed=/.test(cover)) return cover;
+  const separator = cover.includes('?') ? '&' : '?';
+  return `${cover}${separator}seed=${encodeURIComponent(seed)}`;
+};
+
 /**
  * 📐 生成响应式图片 srcset
  * @param src 原始图片路径

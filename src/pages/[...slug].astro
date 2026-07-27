@@ -14,6 +14,7 @@ import NavBar from '../components/Navbar.vue';
 import DocContent from '../components/doc/DocContent.vue';
 import { createPageSeo } from '../utils/seo';
 import { withBase } from '../utils/base';
+import { resolveCoverUrl } from '../utils/image';
 import { readBeautifyPluginRuntime } from '../utils/beautifyConfig';
 
 /* 📋 类型定义 */
@@ -497,7 +498,7 @@ if (existsSync(filePath)) {
     // 🔽提取封面图片
     const coverMatch = frontmatter.match(/cover:\s*['"]?([^'"\r\n]+)['"]?/);
     if (coverMatch) {
-      meta.cover = withBase(coverMatch[1].trim());
+      meta.cover = resolveCoverUrl(withBase(coverMatch[1].trim()), slug);
     }
 
     // 🔽提取自定义 URL

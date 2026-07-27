@@ -20,18 +20,18 @@
         <picture>
           <!-- 🎨 使用 picture 元素支持多种格式 -->
           <source
-            v-if="!isDataUrl(post.cover)"
-            :srcset="generateSrcSet(post.cover, [400, 600, 800])"
+            v-if="!isDataUrl(coverUrl)"
+            :srcset="generateSrcSet(coverUrl, [400, 600, 800])"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             type="image/webp"
           />
           <img
-            :src="post.cover"
+            :src="coverUrl"
             :alt="post.title"
             class="post-cover"
             loading="lazy"
             decoding="async"
-            :srcset="isDataUrl(post.cover) ? undefined : generateSrcSet(post.cover)"
+            :srcset="isDataUrl(coverUrl) ? undefined : generateSrcSet(coverUrl)"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             @load="handleImageLoad"
             @error="handleImageError"
@@ -143,9 +143,9 @@
 <script setup lang="ts">
 /* 🔗 文档内容卡片组件脚本 */
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import type { Post } from '../types/post';
-import { generateSrcSet } from '../utils/image';
+import { generateSrcSet, resolveCoverUrl } from '../utils/image';
 import { useHintPill } from '../composables/useHintPill';
 import { withBase } from '../utils/base';
 
@@ -155,6 +155,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const coverUrl = computed(() => resolveCoverUrl(props.post.cover, props.post.slug));
 
 /* 💬 状态提示胶囊 */
 const { show: showHint, hide: hideHint } = useHintPill();

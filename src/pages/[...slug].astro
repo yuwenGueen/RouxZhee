@@ -20,6 +20,21 @@ import { readBeautifyPluginRuntime } from '../utils/beautifyConfig';
 /* 📋 类型定义 */
 import type { DocMeta, TocItem, DocNavigation, CategoryDoc, CategoryItem } from '../types/doc';
 
+/* 🔌 扩展页面热拔插 */
+const extModules = import.meta.glob('../components/extension-pages/**/index.astro');
+
+function getExtSlugFromPath(path: string): string | null {
+  const match = path.match(/\/extension-pages\/([^/]+)\/index\.astro$/);
+  if (!match) return null;
+  return match[1].replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+const extModuleMap: Record<string, () => Promise<any>> = {};
+for (const [path, loader] of Object.entries(extModules)) {
+  const slug = getExtSlugFromPath(path);
+  if (slug) extModuleMap[slug] = loader;
+}
+
 // 🔽递归获取所有 MD 文件
 function getAllMdFiles(dir: string, basePath: string = ''): string[] {
   const files: string[] = [];
